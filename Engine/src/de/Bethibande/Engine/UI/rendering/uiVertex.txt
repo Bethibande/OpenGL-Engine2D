@@ -1,0 +1,12 @@
+#version 330 core
+
+in vec2 pos;
+
+out vec2 pass_pos;
+
+uniform mat4 transformationMatrix;
+
+void main(void) {
+        gl_Position = transformationMatrix*vec4(pos, 1.0, 1.0);
+        pass_pos = pos;
+}
