@@ -132,8 +132,11 @@ public class Maths {
         Matrix4f matrix = new Matrix4f();
         matrix.setIdentity();
         Matrix4f.translate(new Vector2f(obj.getPosition().x, obj.getPosition().y), matrix, matrix);
-        Matrix4f.rotate((float) Math.toRadians(obj.getRotation()-90), new Vector3f(0,0, 1), matrix, matrix);
-        Matrix4f.scale(new Vector3f(obj.getSize().x,obj.getSize().y, 1.0f), matrix, matrix);
+        Matrix4f.rotate((float) Math.toRadians(obj.getRotation()), new Vector3f(0,0, 1), matrix, matrix);
+        //if(obj.isFlipped()) Matrix4f.rotate((float) Math.toRadians(80), new Vector3f(1,0, 0), matrix, matrix);
+        if(obj.isFlipped()) {
+            Matrix4f.scale(new Vector3f(-obj.getSize().x,obj.getSize().y, 1.0f), matrix, matrix);
+        } else Matrix4f.scale(new Vector3f(obj.getSize().x,obj.getSize().y, 1.0f), matrix, matrix);
         return matrix;
     }
 
