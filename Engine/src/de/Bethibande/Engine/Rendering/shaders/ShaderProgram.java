@@ -63,6 +63,8 @@ public abstract class ShaderProgram {
 
     protected void loadVector4(int location, Vector4f vec) { GL20.glUniform4f(location, vec.x, vec.y, vec.z, vec.w); }
 
+    protected void loadInt(int location, int value) { GL20.glUniform1i(location, value); }
+
     protected void loadBoolean(int location, boolean b) {
         int toLoad = 0;
         if(b) { toLoad = 1; }

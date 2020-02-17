@@ -22,7 +22,9 @@ public class DefaultRenderer {
 
     public void render(List<GameObject2D> objs) {
         shader.start();
-        // render here
+
+        shader.loadLights();
+
         shader.loadViewMatrix(EngineCore.cam);
         for(GameObject2D obj : objs) {
             GL30.glBindVertexArray(obj.getModel().getModel().getId());

@@ -36,16 +36,16 @@ public class MasterRenderer {
         MasterFontRenderer.init(EngineCore.loader);
         while(!Display.isCloseRequested()) {
             //-----------------------------------------------
-            // render
-            render();
-            MasterFontRenderer.render();
-            //-----------------------------------------------
             // game logic
             InputManager.update();
             TimerManager.update();
             for(Runnable r : gameLogic) {
                 r.run();
             }
+            //-----------------------------------------------
+            // render
+            render();
+            MasterFontRenderer.render();
             //-----------------------------------------------
             // update
             DisplayManager.update();
