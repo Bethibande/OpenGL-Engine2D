@@ -31,8 +31,8 @@ Shape rotatedRect = at.createTransformedShape(myRect);
                     pos.y += obj.getMotion().y/2f;
                     if(move(l, obj, pos) == false) {
                         move(l, obj, new Vector2f(pos.x, obj.getPosition().y));
-                        move(l, obj, new Vector2f(obj.getPosition().x, pos.y));
-                    }
+                        obj.setOnGround(!move(l, obj, new Vector2f(obj.getPosition().x, pos.y)));
+                    } else obj.setOnGround(false);
                     obj.setMotion(new Vector2f(obj.getMotion().x/2f, obj.getMotion().y/2f));
 
                     if(Math.abs(obj.getMotion().x) <= 0.0025f) obj.getMotion().x = 0;

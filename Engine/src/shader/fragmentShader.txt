@@ -5,8 +5,8 @@ in vec2 pass_position;
 uniform sampler2D sampler;
 
 uniform int loadedLights;
-uniform Vector2f[100] lightPos;
-uniform Vector3f[100] lightColor;
+uniform vec2[100] lightPos;
+uniform vec3[100] lightColor;
 uniform float[100] lightRange;
 
 out vec4 out_Color;

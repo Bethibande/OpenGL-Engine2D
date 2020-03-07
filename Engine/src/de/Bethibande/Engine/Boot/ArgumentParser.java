@@ -13,7 +13,7 @@ public class ArgumentParser {
         for(String arg : args) {
             if(arg.contains(":")) {
                 String[] split = arg.split(":", 2);
-                ArgumentParser.args.put(split[0], split[1]);
+                ArgumentParser.args.put(split[0], arg.substring(split[0].length()+1));
             }
         }
     }

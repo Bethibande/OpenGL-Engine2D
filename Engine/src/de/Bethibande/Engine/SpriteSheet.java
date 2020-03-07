@@ -50,12 +50,12 @@ public class SpriteSheet {
     }
 
     public void play(int framesPerSprite, GameObject2D obj) {
-        int realID2 = obj.getModel().getTexture().getId();
+        int realID2 = obj.getModel().getId();
         Timer t = new Timer(new TimerCode() {
             @Override
             public void run(float value) {
                 int i = (int) value;
-                obj.getModel().setTexture(new Texture(SpriteLoader.textures.get(sheet.getName() + "$" + i)));
+                obj.setModel(new Texture(SpriteLoader.textures.get(sheet.getName() + "$" + i)));
             }
         }, new TimerCode() {
             private int realID = realID2;
@@ -64,13 +64,13 @@ public class SpriteSheet {
                 try {
                     if (loopAnimation) {
                         play(framesPerSprite, obj);
-                    } else obj.getModel().setTexture(new Texture(realID));
+                    } else obj.setModel(new Texture(realID));
                     playing.remove(obj);
                     return;
                 } catch(StackOverflowError e) {
                     if (loopAnimation) {
                         play(framesPerSprite, obj);
-                    } else obj.getModel().setTexture(new Texture(realID));
+                    } else obj.setModel(new Texture(realID));
                     playing.remove(obj);
                 }
             }

@@ -1,9 +1,11 @@
 package de.Bethibande.Engine;
 
+import com.sun.istack.internal.Nullable;
 import de.Bethibande.Engine.Boot.ArgumentParser;
 import de.Bethibande.Engine.Boot.Bootscreen;
 import de.Bethibande.Engine.CodeInjection.ClassLoading;
 import de.Bethibande.Engine.Entities.PrefabManager;
+import de.Bethibande.Engine.Error.EngineError;
 import de.Bethibande.Engine.FileUtils.FileUpdater;
 import de.Bethibande.Engine.Fonts.fontMeshCreator.MasterFontRenderer;
 import de.Bethibande.Engine.Rendering.MasterRenderer;
@@ -12,15 +14,22 @@ import de.Bethibande.Engine.UI.UIElement;
 import de.Bethibande.Engine.UI.UIMaster;
 import de.Bethibande.Engine.utils.*;
 import de.Bethibande.Engine.FileUtils.FileUtils;
+import lombok.Getter;
+import net.arikia.dev.drpc.DiscordEventHandlers;
+import net.arikia.dev.drpc.DiscordRPC;
+import net.arikia.dev.drpc.DiscordRichPresence;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.util.vector.Vector2f;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class EngineCore {
@@ -44,6 +53,9 @@ public class EngineCore {
 
     public static DisplayMode fullscreenMode;
 
+    @Getter
+    private static boolean initializedDiscord = false;
+
     public static void initFromConfig(EngineConfig cfg) {
         EngineCore.cfg = cfg;
         if(!cfg.fulllscreen) init(cfg.title, cfg.resizable, cfg.vsync, cfg.width, cfg.height);
@@ -51,10 +63,20 @@ public class EngineCore {
     }
 
     private static void init(String title, boolean resizable, boolean vsync, int width, int height) {
+        if(!GLContext.getCapabilities().GL_EXT_framebuffer_object) {
+            Log.logError("FBOs are not supported on this device!");
+            stop();
+        }
         if(width == FULLSCREEN) {
             DisplayManager.createDisplay(title, resizable, vsync);
         } else {
             DisplayManager.createDisplay(title, resizable, vsync, width, height);
+        }
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch(Exception e) {
+            e.printStackTrace();
+            EngineError.openError(e);
         }
         Bootscreen.progress = 200;
         Bootscreen.action = "Load objects..";
@@ -92,21 +114,44 @@ public class EngineCore {
                     c.getMethod("main", null).invoke(null, null);
                 } catch(Exception ex) {
                     Log.logError("An error occurred while executing the class '" + cfg.mainClass + "'!");
+                    EngineError.openError(ex);
                 }
             }
         }
         Bootscreen.action = "Started!";
         Bootscreen.progress = 500;
-        //if(!(ArgumentParser.args.containsKey("--devMode") && ArgumentParser.args.get("--devMode").equals("true"))) {
+        if(!(ArgumentParser.args.containsKey("--devMode") && ArgumentParser.args.get("--devMode").equals("true"))) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-        //}
+        }
         Log.log("Start rendering! Engine has started!");
         Bootscreen.close();
         MasterRenderer.startRendering();
+    }
+
+    public static void setupDiscordRPC(String applicationID) {
+        DiscordEventHandlers handlers = new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> {
+            System.out.println("Welcome " + user.username + "#" + user.discriminator + "!");
+        }).build();
+        DiscordRPC.discordInitialize(applicationID, handlers, true);
+        initializedDiscord = true;
+    }
+
+    public static void setDiscordRichPresence(String state, String details, @Nullable String bigImage, @Nullable String smallImage, @Nullable String bigImageText, @Nullable String smallImageText) {
+        DiscordRichPresence.Builder builder = new DiscordRichPresence.Builder(state);
+        builder.setDetails(details);
+        builder.setStartTimestamps(Calendar.getInstance().getTimeInMillis()/1000);
+        if(bigImage != null && bigImageText != null) {
+            builder.setBigImage(bigImage, bigImageText);
+        }
+        if(smallImage != null && smallImageText != null) {
+            builder.setSmallImage(smallImage, smallImageText);
+        }
+        DiscordRichPresence rp = builder.build();
+        DiscordRPC.discordUpdatePresence(rp);
     }
 
     public static void loadProject(String name) {
@@ -149,6 +194,7 @@ public class EngineCore {
         try {
             updater.interrupt();
 
+            DiscordRPC.discordShutdown();
             SpriteLoader.cleanUP();
             FileUtils.saveConfig(cfg, project_config);
             PrefabManager.savePrefabs();

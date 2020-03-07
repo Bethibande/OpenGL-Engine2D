@@ -1,6 +1,7 @@
 package de.Bethibande.Engine.Rendering;
 
 import de.Bethibande.Engine.EngineCore;
+import de.Bethibande.Engine.Error.EngineError;
 import de.Bethibande.Engine.Fonts.fontMeshCreator.MasterFontRenderer;
 import de.Bethibande.Engine.Input.InputManager;
 import de.Bethibande.Engine.Physics.PhysicsEngine;
@@ -11,6 +12,7 @@ import de.Bethibande.Engine.utils.Date;
 import de.Bethibande.Engine.utils.DisplayManager;
 import de.Bethibande.Engine.utils.Log;
 import de.Bethibande.Engine.utils.Maths;
+import net.arikia.dev.drpc.DiscordRPC;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
@@ -34,32 +36,39 @@ public class MasterRenderer {
         long lastFPS = Date.getTime()/1000;
         renderer.loadProjectionMatrix(projectionMatrix);
         MasterFontRenderer.init(EngineCore.loader);
-        while(!Display.isCloseRequested()) {
-            //-----------------------------------------------
-            // game logic
-            InputManager.update();
-            TimerManager.update();
-            for(Runnable r : gameLogic) {
-                r.run();
-            }
-            //-----------------------------------------------
-            // render
-            render();
-            MasterFontRenderer.render();
-            //-----------------------------------------------
-            // update
-            DisplayManager.update();
-            frames++;
-            if(Date.getTime()/1000 > lastFPS) {
-                last_FPS = frames;
-                lastFPS = Date.getTime()/1000;
-                frames = 0;
-                if(EngineCore.cfg.logFPS) {
-                    Log.log("[FPS] " + last_FPS);
+        try {
+            while (!Display.isCloseRequested()) {
+                //-----------------------------------------------
+                // game logic
+                if(EngineCore.isInitializedDiscord()) {
+                    DiscordRPC.discordRunCallbacks();
+                }
+                InputManager.update();
+                TimerManager.update();
+                for (Runnable r : gameLogic) {
+                    r.run();
+                }
+                //-----------------------------------------------
+                // render
+                render();
+                MasterFontRenderer.render();
+                //-----------------------------------------------
+                // update
+                DisplayManager.update();
+                frames++;
+                if (Date.getTime() / 1000 > lastFPS) {
+                    last_FPS = frames;
+                    lastFPS = Date.getTime() / 1000;
+                    frames = 0;
+                    if (EngineCore.cfg.logFPS) {
+                        Log.log("[FPS] " + last_FPS);
+                    }
                 }
             }
+            EngineCore.stop();
+        } catch(Exception e) {
+            EngineError.openError(e);
         }
-        EngineCore.stop();
     }
 
     private static void render() {

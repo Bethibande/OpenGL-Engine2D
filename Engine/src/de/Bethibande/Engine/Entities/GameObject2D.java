@@ -16,7 +16,7 @@ public class GameObject2D {
     private Vector2f size;
     @Getter
     @Setter
-    private TexturedModel model;
+    private Texture model;
     @Getter
     @Setter
     private float rotation;
@@ -38,12 +38,15 @@ public class GameObject2D {
     private boolean gravity = false;
     @Getter
     @Setter
+    private boolean onGround = false;
+    @Getter
+    @Setter
     private Vector2f colliderOffset = null;
     @Getter
     @Setter
     private boolean flipped = false;
 
-    public GameObject2D(Vector2f position, Vector2f size, TexturedModel model, float rotation, String prefab) {
+    public GameObject2D(Vector2f position, Vector2f size, Texture model, float rotation, String prefab) {
         this.position = position;
         this.size = size;
         this.model = model;

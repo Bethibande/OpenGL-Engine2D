@@ -16,11 +16,11 @@ public class DefaultShader extends ShaderProgram {
     private int location_transformationMatrix;
     private int location_viewMatrix;
 
-    private int[] location_lightPos;
-    private int[] location_lightColor;
-    private int[] location_lightRange;
-    private int location_loadedLights;
     public static final int maxLights = 100;
+    private int[] location_lightPos = new int[maxLights];
+    private int[] location_lightColor = new int[maxLights];
+    private int[] location_lightRange = new int[maxLights];
+    private int location_loadedLights;
 
     public DefaultShader() {
         super(vertex_shader, fragment_shader);
@@ -33,6 +33,11 @@ public class DefaultShader extends ShaderProgram {
         location_transformationMatrix = getUniformLocation("transformationMatrix");
 
         location_loadedLights = getUniformLocation("loadedLights");
+
+        location_lightPos = new int[maxLights];
+        location_lightColor = new int[maxLights];
+        location_lightRange = new int[maxLights];
+
         for(int i = 0; i < maxLights; i++) {
             location_lightPos[i] = getUniformLocation("lightPos[" + i + "]");
             location_lightColor[i] = getUniformLocation("lightColor[" + i + "]");

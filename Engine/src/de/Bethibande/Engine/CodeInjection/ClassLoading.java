@@ -1,11 +1,17 @@
 package de.Bethibande.Engine.CodeInjection;
 
+import de.Bethibande.Engine.Boot.ArgumentParser;
 import de.Bethibande.Engine.EngineCore;
 import de.Bethibande.Engine.FileUtils.FileUtils;
 import de.Bethibande.Engine.utils.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +56,10 @@ public class ClassLoading {
             b.append(" " + clazz.getPath());
         }
         try {
-            String cmd = "C:\\Program Files (x86)\\Java\\jdk1.8.0_191\\bin\\javac.exe" + b + " -d " + build + " -classpath C:\\GameEngine\\Engine.jar";
+            String cmd = "C:\\Program Files (x86)\\Java\\jdk1.8.0_191\\bin\\javac.exe" + b + " -d " + build + " -cp C:\\GameEngine\\Engine.jar";
+            if(ArgumentParser.args.containsKey("--cp")) {
+                cmd = cmd +";" + ArgumentParser.args.get("--cp");
+            }
             System.out.println(cmd);
             Process p = Runtime.getRuntime().exec(cmd);
             p.waitFor();
