@@ -29,6 +29,7 @@ public class SpriteSheet {
     @Setter
     private boolean loopAnimation = false;
     private HashMap<GameObject2D, Timer> playing = new HashMap<>();
+    private HashMap<GameObject2D, Integer> rText = new HashMap<>();
     public SpriteSheet(File sheet, int spriteSizeX, int spriteSizeY, int spriteDistance) {
         try {
             this.sheet = sheet;
@@ -50,7 +51,8 @@ public class SpriteSheet {
     }
 
     public void play(int framesPerSprite, GameObject2D obj) {
-        int realID2 = obj.getModel().getId();
+        if(playing.containsKey(obj)) return;
+        if(!rText.containsKey(obj)) rText.put(obj, obj.getModel().getId());
         Timer t = new Timer(new TimerCode() {
             @Override
             public void run(float value) {
@@ -58,29 +60,40 @@ public class SpriteSheet {
                 obj.setModel(new Texture(SpriteLoader.textures.get(sheet.getName() + "$" + i)));
             }
         }, new TimerCode() {
-            private int realID = realID2;
             @Override
             public void run(float value) {
                 try {
                     if (loopAnimation) {
+                        playing.remove(obj);
                         play(framesPerSprite, obj);
-                    } else obj.setModel(new Texture(realID));
+                    } else obj.setModel(new Texture(rText.get(obj)));
                     playing.remove(obj);
+                    //rText.remove(obj);
                     return;
                 } catch(StackOverflowError e) {
                     if (loopAnimation) {
+                        playing.remove(obj);
                         play(framesPerSprite, obj);
-                    } else obj.setModel(new Texture(realID));
+                    } else obj.setModel(new Texture(rText.get(obj)));
                     playing.remove(obj);
+                    //rText.remove(obj);
                 }
             }
         }, 0, loadedSprites.size() - 1, framesPerSprite * loadedSprites.size());
-        playing.put(obj, t);
+        if(!playing.containsKey(obj)) {
+            playing.put(obj, t);
+        } else {
+            playing.remove(obj);
+            playing.put(obj, t);
+        }
     }
 
     public void stop(GameObject2D obj) {
         if(playing.containsKey(obj)) {
             TimerManager.timers.remove(playing.get(obj));
+            playing.remove(obj);
+            obj.setModel(new Texture(rText.get(obj)));
+            rText.remove(obj);
         }
     }
 

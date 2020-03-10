@@ -9,10 +9,16 @@ uniform vec2[100] lightPos;
 uniform vec3[100] lightColor;
 uniform float[100] lightRange;
 
+uniform vec4 clip;
+
 out vec4 out_Color;
 
 void main(void) {
 
-    out_Color = texture(sampler, pass_position);
+    if(gl_FragCoord.x >= clip.x && gl_FragCoord.y >= clip.y && gl_FragCoord.x <= clip.z && gl_FragCoord.y <= clip.w) {
+        out_Color = texture(sampler, pass_position);
+    } else {
+        discard;
+    }
 
 }

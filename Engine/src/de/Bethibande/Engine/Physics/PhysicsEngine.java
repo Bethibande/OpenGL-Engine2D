@@ -2,14 +2,17 @@ package de.Bethibande.Engine.Physics;
 
 import de.Bethibande.Engine.EngineCore;
 import de.Bethibande.Engine.Entities.GameObject2D;
+import de.Bethibande.Engine.events.CollisionEvent;
+import de.Bethibande.Engine.events.EventManager;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector4f;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 
 public class PhysicsEngine {
 
-    public static Vector2f gravity = new Vector2f(0f, -0.9f);
+    public static float gravity = -0.9f;
 
     /*
     Rectangle2D myRect = new Rectangle2D.Double(100, 100, 200, 200);
@@ -17,13 +20,17 @@ AffineTransform at = AffineTransform.getRotateInstance(Math.PI / 4, 150, 150);
 Shape rotatedRect = at.createTransformedShape(myRect);
      */
 
+    public static boolean useRotations = false;
+    public static float physicsPrecision = 1000;
+    public static float minMotion = 0.000025f;
+
     public static void update() {
+        if(EngineCore.physicsPaused) return;
         for(String l : EngineCore.currentScene.getLayers().keySet()) {
             for(GameObject2D obj : EngineCore.currentScene.getLayers().get(l)) {
                 if(obj.isGravity()) {
                     if(obj.getMotion() == null) obj.setMotion(new Vector2f(0, 0));
-                    obj.getMotion().x += gravity.x;
-                    obj.getMotion().y += gravity.y;
+                    obj.getMotion().y += gravity;
                 }
                 if (obj.getMotion() != null && (obj.getMotion().x != 0 || obj.getMotion().y != 0)) {
                     Vector2f pos = new Vector2f(obj.getPosition().x, obj.getPosition().y);
@@ -35,8 +42,8 @@ Shape rotatedRect = at.createTransformedShape(myRect);
                     } else obj.setOnGround(false);
                     obj.setMotion(new Vector2f(obj.getMotion().x/2f, obj.getMotion().y/2f));
 
-                    if(Math.abs(obj.getMotion().x) <= 0.0025f) obj.getMotion().x = 0;
-                    if(Math.abs(obj.getMotion().y) <= 0.0025f) obj.getMotion().y = 0;
+                    if(Math.abs(obj.getMotion().x) <= minMotion) obj.getMotion().x = 0;
+                    if(Math.abs(obj.getMotion().y) <= minMotion) obj.getMotion().y = 0;
                 }
             }
         }
@@ -45,30 +52,69 @@ Shape rotatedRect = at.createTransformedShape(myRect);
     public static boolean move(String layer, GameObject2D a, Vector2f newPosition) {
         boolean collided = false;
         Vector2f ac = a.getCollider();
-        Rectangle r = new Rectangle((int)(newPosition.x*100f-(ac.x*100f/2f)), (int)(newPosition.y*100f-(ac.y*100f/2f)), (int)(ac.x*100), (int)(ac.y*100));
+        Rectangle r = new Rectangle((int)(newPosition.x*physicsPrecision-(ac.x*physicsPrecision/2f)), (int)(newPosition.y*physicsPrecision-(ac.y*physicsPrecision/2f)), (int)(ac.x*physicsPrecision), (int)(ac.y*physicsPrecision));
+        //AffineTransform transform2 = new AffineTransform();
+        //transform2.rotate(Math.toRadians(a.getRotation()), r.getX() + r.width/2, r.getY() + r.height/2);
+        //Shape rotated = transform2.createTransformedShape(r);
+
         if(a.getColliderOffset() != null) {
-            r.setLocation(r.getLocation().x+(int)(a.getColliderOffset().x*100f), r.getLocation().y+(int)(a.getColliderOffset().y*100f));
+            r.setLocation(r.getLocation().x+(int)(a.getColliderOffset().x*physicsPrecision), r.getLocation().y+(int)(a.getColliderOffset().y*physicsPrecision));
         }
         for(GameObject2D b : EngineCore.currentScene.getLayers().get(layer)) {
-            Vector2f bc = b.getCollider();
-            Rectangle r2 = new Rectangle((int)(b.getPosition().x*100f-(bc.x*100f/2f)), (int)(b.getPosition().y*100f-(bc.y*100f/2f)), (int)(bc.x*100), (int)(bc.y*100));
-            if(b.getColliderOffset() != null) {
-                r2.setLocation(r2.getLocation().x+(int)(b.getColliderOffset().x*100f), r2.getLocation().y+(int)(b.getColliderOffset().y*100f));
-            }
-            if(r.intersects(r2) && b != a) {
-                collided = true;
+            if (b.isCanCollide()) {
+                Vector2f bc = b.getCollider();
+                Rectangle r2 = new Rectangle((int) (b.getPosition().x * physicsPrecision - (bc.x * physicsPrecision / 2f)), (int) (b.getPosition().y * physicsPrecision - (bc.y * physicsPrecision / 2f)), (int) (bc.x * physicsPrecision), (int) (bc.y * physicsPrecision));
+                if (b.getColliderOffset() != null) {
+                    r2.setLocation(r2.getLocation().x + (int) (b.getColliderOffset().x * physicsPrecision), r2.getLocation().y + (int) (b.getColliderOffset().y * physicsPrecision));
+                }
+                if (PositionUtils.distance(newPosition, b.getPosition()) < a.getCollider().x + a.getCollider().y + b.getCollider().x + b.getCollider().y) {
+                    if (useRotations) {
+                        AffineTransform transform = new AffineTransform();
+                        transform.rotate(Math.toRadians(b.getRotation()), r2.getX() + r2.width / 2, r2.getY() + r2.height / 2);
+                        Shape rotatedRect = transform.createTransformedShape(r2);
+                        if (rotatedRect.intersects(r) && b != a) {
+                            CollisionEvent e = new CollisionEvent(a, b);
+                            EventManager.runEvent(e);
+                            if(e.isCancelled() && collided != true) {
+                                collided = false;
+                            } else {
+                                collided = true;
+                                float yA = ((float) r.getLocation().y - (float) r.getHeight() / 2) / physicsPrecision;
+                                float yB = ((float) r2.getLocation().y + (float) r2.getHeight() / 2) / physicsPrecision;
+                                //System.out.println(yA + " " + yB + " " + (yB-yA) + " " + (yA+(ac.y/4)));
+                                if (yB > yA && yA + (ac.y / 2) > yB) {
+                                    if (newPosition.x < a.getPosition().x || newPosition.x > a.getPosition().x) {
+                                        //System.out.println(yB + " " + yA + " " + (yB-yA));
+                                        newPosition.y += (yB - yA) / physicsPrecision;
+                                        return move(layer, a, newPosition);
+                                    }
+                                }
+                            }
+                        }
+                    } else if (r.intersects(r2) && b != a) {
+                        CollisionEvent e = new CollisionEvent(a, b);
+                        EventManager.runEvent(e);
+                        if(e.isCancelled() && collided != true) {
+                            collided = false;
+                        } else {
+                            collided = true;
+                            float yA = ((float) r.getLocation().y - (float) r.getHeight() / 2) / physicsPrecision;
+                            float yB = ((float) r2.getLocation().y + (float) r2.getHeight() / 2) / physicsPrecision;
+                            //System.out.println(yA + " " + yB + " " + (yB-yA) + " " + (yA+(ac.y/4)));
+                            if (yB > yA && yA + (ac.y / 2) > yB) {
+                                if (newPosition.x < a.getPosition().x || newPosition.x > a.getPosition().x) {
+                                    //System.out.println(yB + " " + yA + " " + (yB-yA));
+                                    newPosition.y += (yB - yA) / physicsPrecision;
+                                    return move(layer, a, newPosition);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         if(!collided) { a.setPosition(newPosition); }
         return !collided;
-    }
-
-    private static boolean collides(GameObject2D a, GameObject2D b) {
-        Vector2f ac = a.getCollider();
-        Vector2f bc = b.getCollider();
-        Rectangle r = new Rectangle((int)(a.getPosition().x*100f-(ac.x*100f/2f)), (int)(a.getPosition().y*100f-(ac.y*100f/2f)), (int)(ac.x*100), (int)(ac.y*100));
-        Rectangle r2 = new Rectangle((int)(b.getPosition().x*100f-(bc.x*100f/2f)), (int)(b.getPosition().y*100f-(bc.y*100f/2f)), (int)(bc.x*100), (int)(bc.y*100));
-        return r.intersects(r2);
     }
     /*
     public boolean intersects(Rectangle r)

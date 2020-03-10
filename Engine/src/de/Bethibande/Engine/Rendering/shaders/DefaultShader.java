@@ -6,6 +6,7 @@ import de.Bethibande.Engine.Lights.PointLight;
 import de.Bethibande.Engine.utils.Maths;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 public class DefaultShader extends ShaderProgram {
 
@@ -21,6 +22,9 @@ public class DefaultShader extends ShaderProgram {
     private int[] location_lightColor = new int[maxLights];
     private int[] location_lightRange = new int[maxLights];
     private int location_loadedLights;
+
+    private int location_clip;
+    private int location_zIndex;
 
     public DefaultShader() {
         super(vertex_shader, fragment_shader);
@@ -44,6 +48,8 @@ public class DefaultShader extends ShaderProgram {
             location_lightRange[i] = getUniformLocation("lightRange[" + i + "]");
         }
 
+        location_clip = getUniformLocation("clip");
+        location_zIndex = getUniformLocation("zIndex");
     }
     @Override
     protected void bindAttributes() {
@@ -61,6 +67,12 @@ public class DefaultShader extends ShaderProgram {
 
     public void loadViewMatrix(Camera c) { loadMatrix(location_viewMatrix, Maths.createViewMatrix(c)); }
 
+    public void loadScreenClip() {
+        //loadVector4(location_clip, new Vector4f(-EngineCore.cam.getPosition().x, -EngineCore.cam.getPosition().y,
+        //        EngineCore.fullscreenMode.getWidth()-EngineCore.cam.getPosition().x, EngineCore.fullscreenMode.getHeight()-EngineCore.cam.getPosition().y));
+        loadVector4(location_clip, new Vector4f(0, 0, EngineCore.fullscreenMode.getWidth(), EngineCore.fullscreenMode.getHeight()));
+    }
+
     public void loadLights() {
         if(EngineCore.currentScene != null ) {
             loadInt(location_loadedLights, EngineCore.currentScene.getLights().size());
@@ -72,6 +84,10 @@ public class DefaultShader extends ShaderProgram {
                 i++;
             }
         }
+    }
+
+    public void setZIndex(float index) {
+        loadFloat(location_zIndex, -index);
     }
 
 }

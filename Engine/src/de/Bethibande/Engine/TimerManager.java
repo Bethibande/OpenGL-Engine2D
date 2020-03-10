@@ -16,12 +16,12 @@ public class TimerManager {
                     if (t.getValue() >= t.getEnd()) {
                         done.add(t);
                     }
-                }
+                } else
                 if(t.getStart() > t.getEnd()) {
                     if (t.getValue() <= t.getEnd()) {
                         done.add(t);
                     }
-                }
+                } else
                 if(t.getStart() == t.getEnd()) {
                     done.add(t);
                 }
@@ -31,6 +31,7 @@ public class TimerManager {
         for(Timer t : done) {
             timers.remove(t);
             t.done();
+            //System.out.println("timer expired");
         }
         done.clear();
     }

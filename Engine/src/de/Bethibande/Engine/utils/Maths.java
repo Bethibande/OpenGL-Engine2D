@@ -1,9 +1,11 @@
 package de.Bethibande.Engine.utils;
 
 import de.Bethibande.Engine.Camera;
+import de.Bethibande.Engine.EngineCore;
 import de.Bethibande.Engine.Entities.GameObject2D;
 import de.Bethibande.Engine.UI.rendering.UIDrawable;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -30,6 +32,28 @@ public class Maths {
         projectionMatrix.m33 = 0;
         return projectionMatrix;
     }
+
+    /*public static Matrix4f createProjectionMatrix() {
+        Matrix4f m = new Matrix4f();
+        m.setIdentity();
+
+        DisplayMode fullscreenMode = Display.getDesktopDisplayMode();
+
+        m.m00 = 2f/(fullscreenMode.getWidth()-0);
+
+        m.m11 = 2f/(0-fullscreenMode.getHeight());
+
+        m.m22 = 2f/(FAR_PLANE-NEAR_PLANE);
+
+        m.m30 = -(fullscreenMode.getWidth()+0)/(fullscreenMode.getWidth()-0);
+        m.m31 = -(0+fullscreenMode.getHeight())/(0-fullscreenMode.getHeight());
+        //m.m30 = -1;
+        //m.m31 = 1;
+        m.m32 = -(FAR_PLANE+NEAR_PLANE)/(FAR_PLANE-NEAR_PLANE);
+        m.m33 = 1f;
+
+        return m;
+    }*/
 
     /*public static Matrix4f createProjectionMatrix(float x, float y, float width, float height) {
         return toOrtho(x, x + width, y + height, y, 0f, 2f);

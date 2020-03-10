@@ -56,6 +56,9 @@ public class EngineCore {
     @Getter
     private static boolean initializedDiscord = false;
 
+    public static boolean physicsPaused = false;
+    public static boolean devMode = false;
+
     public static void initFromConfig(EngineConfig cfg) {
         EngineCore.cfg = cfg;
         if(!cfg.fulllscreen) init(cfg.title, cfg.resizable, cfg.vsync, cfg.width, cfg.height);
@@ -126,7 +129,7 @@ public class EngineCore {
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-        }
+        } else devMode = true;
         Log.log("Start rendering! Engine has started!");
         Bootscreen.close();
         MasterRenderer.startRendering();

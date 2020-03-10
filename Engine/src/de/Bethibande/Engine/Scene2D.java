@@ -5,15 +5,15 @@ import de.Bethibande.Engine.Lights.PointLight;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.TreeMap;
 
 public class Scene2D {
 
     @Getter
     private List<PointLight> lights = new ArrayList<>();
     @Getter
-    private TreeMap<String, List<GameObject2D>> layers = new TreeMap<>();
+    private LinkedHashMap<String, List<GameObject2D>> layers = new LinkedHashMap<>();
 
     public void addObject(String layer, GameObject2D obj) { layers.get(layer).add(obj); }
     public void removeObject(String layer, GameObject2D obj) { layers.get(layer).remove(obj); }
