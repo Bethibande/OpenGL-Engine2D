@@ -28,6 +28,9 @@ public class SpriteSheet {
     @Getter
     @Setter
     private boolean loopAnimation = false;
+    @Getter
+    @Setter
+    private boolean resetToStartingTexture = true;
     private HashMap<GameObject2D, Timer> playing = new HashMap<>();
     private HashMap<GameObject2D, Integer> rText = new HashMap<>();
     public SpriteSheet(File sheet, int spriteSizeX, int spriteSizeY, int spriteDistance) {
@@ -52,7 +55,7 @@ public class SpriteSheet {
 
     public void play(int framesPerSprite, GameObject2D obj) {
         if(playing.containsKey(obj)) return;
-        if(!rText.containsKey(obj)) rText.put(obj, obj.getModel().getId());
+        if(!rText.containsKey(obj) && resetToStartingTexture) { rText.put(obj, obj.getModel().getId()); }
         Timer t = new Timer(new TimerCode() {
             @Override
             public void run(float value) {
@@ -64,22 +67,29 @@ public class SpriteSheet {
             public void run(float value) {
                 try {
                     if (loopAnimation) {
+                        //TimerManager.timers.remove(this);
+                        //System.out.println("loop!");
                         playing.remove(obj);
                         play(framesPerSprite, obj);
-                    } else obj.setModel(new Texture(rText.get(obj)));
-                    playing.remove(obj);
+                    } else {
+                        if(resetToStartingTexture) obj.setModel(new Texture(rText.get(obj)));
+                        playing.remove(obj);
+                    }
                     //rText.remove(obj);
                     return;
                 } catch(StackOverflowError e) {
                     if (loopAnimation) {
+                        //TimerManager.timers.remove(this);
                         playing.remove(obj);
                         play(framesPerSprite, obj);
-                    } else obj.setModel(new Texture(rText.get(obj)));
-                    playing.remove(obj);
+                    } else {
+                        playing.remove(obj);
+                        if(resetToStartingTexture) obj.setModel(new Texture(rText.get(obj)));
+                    }
                     //rText.remove(obj);
                 }
             }
-        }, 0, loadedSprites.size() - 1, framesPerSprite * loadedSprites.size());
+        }, 0, loadedSprites.size() - 1, framesPerSprite * (loadedSprites.size()));
         if(!playing.containsKey(obj)) {
             playing.put(obj, t);
         } else {
@@ -92,9 +102,12 @@ public class SpriteSheet {
         if(playing.containsKey(obj)) {
             TimerManager.timers.remove(playing.get(obj));
             playing.remove(obj);
-            obj.setModel(new Texture(rText.get(obj)));
-            rText.remove(obj);
+            if(resetToStartingTexture) obj.setModel(new Texture(rText.get(obj)));
+            if(resetToStartingTexture) rText.remove(obj);
+            //System.out.println("stopped animation 1/" + TimerManager.timers.size());
         }
     }
+
+    public boolean isPlaying(GameObject2D obj) { return playing.containsKey(obj); }
 
 }

@@ -13,6 +13,9 @@ public class SpriteAnimator {
     @Getter
     @Setter
     private boolean loopAnimation = false;
+    @Getter
+    @Setter
+    private boolean resetToStartingTexture = true;
 
     private HashMap<GameObject2D, Timer> playing = new HashMap<>();
     private HashMap<GameObject2D, Integer> rText = new HashMap<>();
@@ -23,7 +26,7 @@ public class SpriteAnimator {
 
     public void play(int framesPerSprite, GameObject2D obj) {
         if(playing.containsKey(obj)) return;
-        if(!rText.containsKey(obj)) { rText.put(obj, obj.getModel().getId()); }
+        if(!rText.containsKey(obj) && resetToStartingTexture) { rText.put(obj, obj.getModel().getId()); }
         Timer t = new Timer(new TimerCode() {
             @Override
             public void run(float value) {
@@ -37,7 +40,7 @@ public class SpriteAnimator {
                     if (loopAnimation) {
                         //TimerManager.timers.remove(this);
                         play(framesPerSprite, obj);
-                    } else obj.setModel(new Texture(rText.get(obj)));
+                    } else if(resetToStartingTexture) obj.setModel(new Texture(rText.get(obj)));
                     playing.remove(obj);
                     //rText.remove(obj);
                     return;
@@ -45,7 +48,7 @@ public class SpriteAnimator {
                     if (loopAnimation) {
                         //TimerManager.timers.remove(this);
                         play(framesPerSprite, obj);
-                    } else obj.setModel(new Texture(rText.get(obj)));
+                    } else if(resetToStartingTexture) obj.setModel(new Texture(rText.get(obj)));
                     playing.remove(obj);
                     //rText.remove(obj);
                 }
@@ -63,8 +66,8 @@ public class SpriteAnimator {
         if(playing.containsKey(obj)) {
             TimerManager.timers.remove(playing.get(obj));
             playing.remove(obj);
-            obj.setModel(new Texture(rText.get(obj)));
-            rText.remove(obj);
+            if(resetToStartingTexture) obj.setModel(new Texture(rText.get(obj)));
+            if(resetToStartingTexture) rText.remove(obj);
             //System.out.println("stopped animation 1/" + TimerManager.timers.size());
         }
     }
