@@ -1,6 +1,7 @@
 package de.Bethibande.Engine.Rendering;
 
 import de.Bethibande.Engine.EngineCore;
+import de.Bethibande.Engine.Entities.FBO;
 import de.Bethibande.Engine.Entities.GameObject2D;
 import de.Bethibande.Engine.Entities.RawModel;
 import de.Bethibande.Engine.Rendering.shaders.DefaultShader;
@@ -15,6 +16,9 @@ import org.lwjgl.util.vector.Vector2f;
 import java.util.List;
 
 public class DefaultRenderer {
+
+    // this renderer renders the different layers to an fbo
+    // it also applies lightning and shading to the layers
 
     private DefaultShader shader;
 
@@ -47,15 +51,20 @@ public class DefaultRenderer {
         screenSize = Display.getDesktopDisplayMode();
     }
 
-    public void render(float zIndex, List<GameObject2D> objs) {
+    public FBO render(List<GameObject2D> objs) {
         shader.start();
+        FBO f = new FBO(Display.getWidth(), Display.getHeight());
+        EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, f.getFboID());
+        GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, f.getFboID());
+
+        shader.loadZoom(EngineCore.cam.getZoom());
 
         if(wireframe) {
             GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
         }
 
         //shader.loadLights();
-        shader.setZIndex(zIndex);
+        shader.setZIndex(10);
 
         shader.loadViewMatrix(EngineCore.cam);
         GL30.glBindVertexArray(quad.getId());
@@ -65,7 +74,7 @@ public class DefaultRenderer {
         int lastTexture = -1;
         boolean cull = true;
         for(GameObject2D obj : objs) {
-            //if(isOnScreen(obj)) {
+            if(obj.isVisible()) {
                 if(obj.getModel().getId() != lastTexture) {
                     GL13.glActiveTexture(GL13.GL_TEXTURE0);
                     GL11.glBindTexture(GL11.GL_TEXTURE_2D, obj.getModel().getId());
@@ -82,7 +91,7 @@ public class DefaultRenderer {
                 shader.loadTransformatiobMatrix(Maths.createTransformationMatrix(obj));
 
                 GL11.glDrawElements(GL11.GL_TRIANGLES, quad.getVertices(), GL11.GL_UNSIGNED_INT, 0);
-            //}
+            }
         }
         GL20.glDisableVertexAttribArray(0);
         GL20.glDisableVertexAttribArray(1);
@@ -90,6 +99,7 @@ public class DefaultRenderer {
         GL30.glBindVertexArray(0);
         GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
         shader.stop();
+        return f;
     }
 
     public void prepare() {
@@ -97,7 +107,6 @@ public class DefaultRenderer {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         //GL11.glEnable(GL11.GL_DEPTH_TEST);
         //GL11.glDepthFunc(GL11.GL_LESS);
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glCullFace(GL11.GL_BACK);
         //GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);

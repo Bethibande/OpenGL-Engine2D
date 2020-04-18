@@ -17,14 +17,9 @@ public class DefaultShader extends ShaderProgram {
     private int location_transformationMatrix;
     private int location_viewMatrix;
 
-    public static final int maxLights = 100;
-    private int[] location_lightPos = new int[maxLights];
-    private int[] location_lightColor = new int[maxLights];
-    private int[] location_lightRange = new int[maxLights];
-    private int location_loadedLights;
-
     private int location_clip;
     private int location_zIndex;
+    private int location_zoom;
 
     public DefaultShader() {
         super(vertex_shader, fragment_shader);
@@ -36,20 +31,9 @@ public class DefaultShader extends ShaderProgram {
         location_viewMatrix = getUniformLocation("viewMatrix");
         location_transformationMatrix = getUniformLocation("transformationMatrix");
 
-        location_loadedLights = getUniformLocation("loadedLights");
-
-        location_lightPos = new int[maxLights];
-        location_lightColor = new int[maxLights];
-        location_lightRange = new int[maxLights];
-
-        for(int i = 0; i < maxLights; i++) {
-            location_lightPos[i] = getUniformLocation("lightPos[" + i + "]");
-            location_lightColor[i] = getUniformLocation("lightColor[" + i + "]");
-            location_lightRange[i] = getUniformLocation("lightRange[" + i + "]");
-        }
-
         location_clip = getUniformLocation("clip");
         location_zIndex = getUniformLocation("zIndex");
+        location_zoom = getUniformLocation("cameraZoom");
     }
     @Override
     protected void bindAttributes() {
@@ -73,21 +57,10 @@ public class DefaultShader extends ShaderProgram {
         loadVector4(location_clip, new Vector4f(0, 0, EngineCore.fullscreenMode.getWidth(), EngineCore.fullscreenMode.getHeight()));
     }
 
-    public void loadLights() {
-        if(EngineCore.currentScene != null ) {
-            loadInt(location_loadedLights, EngineCore.currentScene.getLights().size());
-            int i = 0;
-            for(PointLight l : EngineCore.currentScene.getLights()) {
-                loadVector2(location_lightPos[i], l.getPosition());
-                loadVector(location_lightColor[i], new Vector3f(l.getColor().getRed()/255f, l.getColor().getGreen()/255f, l.getColor().getBlue()/255f));
-                loadFloat(location_lightRange[i], l.getRange());
-                i++;
-            }
-        }
-    }
-
     public void setZIndex(float index) {
         loadFloat(location_zIndex, -index);
     }
+
+    public void loadZoom(float scale) { loadFloat(location_zoom, scale);}
 
 }

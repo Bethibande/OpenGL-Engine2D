@@ -10,6 +10,7 @@ uniform mat4 viewMatrix;
 uniform mat4 transformationMatrix;
 
 uniform float zIndex;
+uniform float cameraZoom;
 
 void main(void) {
 

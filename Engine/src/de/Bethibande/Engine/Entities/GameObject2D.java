@@ -45,6 +45,9 @@ public class GameObject2D {
     @Getter
     @Setter
     private boolean flipped = false;
+    @Getter
+    @Setter
+    private boolean isVisible = true;
 
     public GameObject2D(Vector2f position, Vector2f size, Texture model, float rotation, String prefab) {
         this.position = position;

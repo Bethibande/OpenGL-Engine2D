@@ -1,0 +1,13 @@
+#version 330 core
+
+in vec2 position;
+in vec2 textureCoordinate;
+
+out vec2 pass_position;
+
+void main(void) {
+
+    gl_Position = vec4(position, 1.0, 1.0);
+    pass_position = textureCoordinate;
+
+}

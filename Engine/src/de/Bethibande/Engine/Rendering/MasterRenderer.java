@@ -1,6 +1,7 @@
 package de.Bethibande.Engine.Rendering;
 
 import de.Bethibande.Engine.EngineCore;
+import de.Bethibande.Engine.Entities.FBO;
 import de.Bethibande.Engine.Error.EngineError;
 import de.Bethibande.Engine.Fonts.fontMeshCreator.MasterFontRenderer;
 import de.Bethibande.Engine.Input.Input;
@@ -13,7 +14,9 @@ import de.Bethibande.Engine.utils.Date;
 import de.Bethibande.Engine.utils.DisplayManager;
 import de.Bethibande.Engine.utils.Log;
 import de.Bethibande.Engine.utils.Maths;
+import lombok.Getter;
 import net.arikia.dev.drpc.DiscordRPC;
+import org.lwjgl.input.Controller;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -21,6 +24,7 @@ import org.lwjgl.util.vector.Matrix4f;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MasterRenderer {
@@ -28,10 +32,17 @@ public class MasterRenderer {
     public static int last_FPS = 0;
 
     public static final DefaultRenderer renderer = new DefaultRenderer();
+    private static final FBOMergeRenderer merger = new FBOMergeRenderer();
+    private static final FinalRenderer fRenderer = new FinalRenderer();
     public static final UIRenderer ui = new UIRenderer();
     public static final List<Runnable> gameLogic = new ArrayList<>();
 
     private static Matrix4f projectionMatrix = Maths.createProjectionMatrix();
+
+    @Getter
+    private static HashMap<FBO, Float> fbos = new HashMap<>();
+    @Getter
+    private static FBO finalFBO = new FBO(Display.getWidth(), Display.getHeight());
 
     private static int wireframeLayer = -1;
 
@@ -39,6 +50,7 @@ public class MasterRenderer {
         int frames = 0;
         long lastFPS = Date.getTime()/1000;
         renderer.loadProjectionMatrix(projectionMatrix);
+        fRenderer.loadProjectionMatrix(projectionMatrix);
         MasterFontRenderer.init(EngineCore.loader);
 
         if(EngineCore.devMode) {
@@ -62,6 +74,9 @@ public class MasterRenderer {
                 }
                 InputManager.update();
                 TimerManager.update();
+                for(Controller con : EngineCore.getListenToControllers()) {
+                    con.poll();
+                }
                 for (Runnable r : gameLogic) {
                     r.run();
                 }
@@ -93,18 +108,31 @@ public class MasterRenderer {
 
         prepare();
         renderer.prepare();
+        if(!fbos.isEmpty()) {
+            fbos.keySet().forEach(EngineCore::destroyFBO);
+            fbos.clear();
+        }
         if(EngineCore.currentScene != null) {
-            float index = EngineCore.currentScene.getLayers().keySet().size()*0.01f+10;
+            float index = EngineCore.currentScene.getLayers().keySet().size()*0.01f+1;
             int i = 0;
             for(String l : EngineCore.currentScene.getLayers().keySet()) {
                 index -= 0.01f;
                 if(i == wireframeLayer) {
                     renderer.setWireframe(true);
                 } else renderer.setWireframe(false);
-                renderer.render(index, EngineCore.currentScene.getLayers().get(l));
+                FBO fbo = renderer.render(EngineCore.currentScene.getLayers().get(l));
+                fbos.put(fbo, index);
                 i++;
             }
         }
+
+        merger.prepare();
+        for(FBO fbo : fbos.keySet()) {
+            merger.render(fbo);
+        }
+        fRenderer.prepare();
+        fRenderer.render(finalFBO);
+
         if(!UIMaster.elements.isEmpty()) ui.render(UIMaster.elements);
     }
 

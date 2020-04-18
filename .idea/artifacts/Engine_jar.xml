@@ -11,6 +11,7 @@
       <element id="extracted-dir" path="$USER_HOME$/Desktop/Random Stuff/Neuer Ordner/lwjgl/lwjgl-openal.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/Downloads/discord-rpc.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/Downloads/jna-5.5.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/Random Stuff/Neuer Ordner/lwjgl-2.9.3/jar/jinput.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

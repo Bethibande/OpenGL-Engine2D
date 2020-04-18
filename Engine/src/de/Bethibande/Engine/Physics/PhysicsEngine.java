@@ -86,7 +86,7 @@ Shape rotatedRect = at.createTransformedShape(myRect);
                                     if (newPosition.x < a.getPosition().x || newPosition.x > a.getPosition().x) {
                                         //System.out.println(yB + " " + yA + " " + (yB-yA));
                                         newPosition.y += (yB - yA) / physicsPrecision;
-                                        return move(layer, a, newPosition);
+                                        return move2(layer, a, newPosition);
                                     }
                                 }
                             }
@@ -105,7 +105,7 @@ Shape rotatedRect = at.createTransformedShape(myRect);
                                 if (newPosition.x < a.getPosition().x || newPosition.x > a.getPosition().x) {
                                     //System.out.println(yB + " " + yA + " " + (yB-yA));
                                     newPosition.y += (yB - yA) / physicsPrecision;
-                                    return move(layer, a, newPosition);
+                                    return move2(layer, a, newPosition);
                                 }
                             }
                         }
@@ -116,6 +116,55 @@ Shape rotatedRect = at.createTransformedShape(myRect);
         if(!collided) { a.setPosition(newPosition); }
         return !collided;
     }
+
+    private static boolean move2(String layer, GameObject2D a, Vector2f newPosition) {
+        boolean collided = false;
+        Vector2f ac = a.getCollider();
+        Rectangle r = new Rectangle((int)(newPosition.x*physicsPrecision-(ac.x*physicsPrecision/2f)), (int)(newPosition.y*physicsPrecision-(ac.y*physicsPrecision/2f)), (int)(ac.x*physicsPrecision), (int)(ac.y*physicsPrecision));
+        //AffineTransform transform2 = new AffineTransform();
+        //transform2.rotate(Math.toRadians(a.getRotation()), r.getX() + r.width/2, r.getY() + r.height/2);
+        //Shape rotated = transform2.createTransformedShape(r);
+
+        if(a.getColliderOffset() != null) {
+            r.setLocation(r.getLocation().x+(int)(a.getColliderOffset().x*physicsPrecision), r.getLocation().y+(int)(a.getColliderOffset().y*physicsPrecision));
+        }
+        for(GameObject2D b : EngineCore.currentScene.getLayers().get(layer)) {
+            if (b.isCanCollide()) {
+                Vector2f bc = b.getCollider();
+                Rectangle r2 = new Rectangle((int) (b.getPosition().x * physicsPrecision - (bc.x * physicsPrecision / 2f)), (int) (b.getPosition().y * physicsPrecision - (bc.y * physicsPrecision / 2f)), (int) (bc.x * physicsPrecision), (int) (bc.y * physicsPrecision));
+                if (b.getColliderOffset() != null) {
+                    r2.setLocation(r2.getLocation().x + (int) (b.getColliderOffset().x * physicsPrecision), r2.getLocation().y + (int) (b.getColliderOffset().y * physicsPrecision));
+                }
+                if (PositionUtils.distance(newPosition, b.getPosition()) < a.getCollider().x + a.getCollider().y + b.getCollider().x + b.getCollider().y) {
+                    if (useRotations) {
+                        AffineTransform transform = new AffineTransform();
+                        transform.rotate(Math.toRadians(b.getRotation()), r2.getX() + r2.width / 2, r2.getY() + r2.height / 2);
+                        Shape rotatedRect = transform.createTransformedShape(r2);
+                        if (rotatedRect.intersects(r) && b != a) {
+                            CollisionEvent e = new CollisionEvent(a, b);
+                            EventManager.runEvent(e);
+                            if(e.isCancelled() && collided != true) {
+                                collided = false;
+                            } else {
+                                collided = true;
+                            }
+                        }
+                    } else if (r.intersects(r2) && b != a) {
+                        CollisionEvent e = new CollisionEvent(a, b);
+                        EventManager.runEvent(e);
+                        if(e.isCancelled() && collided != true) {
+                            collided = false;
+                        } else {
+                            collided = true;
+                        }
+                    }
+                }
+            }
+        }
+        if(!collided) { a.setPosition(newPosition); }
+        return !collided;
+    }
+
     /*
     public boolean intersects(Rectangle r)
     {

@@ -1,8 +1,11 @@
-package de.Bethibande.Engine;
+package de.Bethibande.Engine.animation;
 
 import de.Bethibande.Engine.Entities.GameObject2D;
 import de.Bethibande.Engine.Entities.Texture;
 import de.Bethibande.Engine.Rendering.SpriteLoader;
+import de.Bethibande.Engine.Timer;
+import de.Bethibande.Engine.TimerCode;
+import de.Bethibande.Engine.TimerManager;
 import de.Bethibande.Engine.utils.Log;
 import lombok.Getter;
 import lombok.Setter;

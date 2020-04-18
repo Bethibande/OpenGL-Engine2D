@@ -68,7 +68,7 @@ public class FileUtils {
           "",
           "public class Core {",
           "    ",
-          "    public void main() {",
+          "    public static void main() {",
           "         System.out.println(\"It works!\");",
           "    }",
           "}"

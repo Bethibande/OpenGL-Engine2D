@@ -99,7 +99,7 @@ public class Maths {
         Matrix4f.translate(cPosNeg, m, m);
         Matrix4f.rotate((float) Math.toRadians(c.getRotation()), new Vector3f(0,0, 1), m, m);
 
-        Matrix4f.scale(new Vector3f(c.getScale(), c.getScale(), 1.0f), m, m);
+        //Matrix4f.scale(new Vector3f(c.getZoom(), c.getZoom(), 1.0f), m, m);
 
         return m;
     }

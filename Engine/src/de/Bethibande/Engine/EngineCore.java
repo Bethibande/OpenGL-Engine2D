@@ -4,6 +4,7 @@ import com.sun.istack.internal.Nullable;
 import de.Bethibande.Engine.Boot.ArgumentParser;
 import de.Bethibande.Engine.Boot.Bootscreen;
 import de.Bethibande.Engine.CodeInjection.ClassLoading;
+import de.Bethibande.Engine.Entities.FBO;
 import de.Bethibande.Engine.Entities.PrefabManager;
 import de.Bethibande.Engine.Error.EngineError;
 import de.Bethibande.Engine.FileUtils.FileUpdater;
@@ -19,15 +20,15 @@ import net.arikia.dev.drpc.DiscordEventHandlers;
 import net.arikia.dev.drpc.DiscordRPC;
 import net.arikia.dev.drpc.DiscordRichPresence;
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Controller;
+import org.lwjgl.input.Controllers;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.GLContext;
-import org.lwjgl.opengl.PixelFormat;
+import org.lwjgl.opengl.*;
 import org.lwjgl.util.vector.Vector2f;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -58,6 +59,9 @@ public class EngineCore {
 
     public static boolean physicsPaused = false;
     public static boolean devMode = false;
+
+    @Getter
+    private static List<Controller> listenToControllers = new ArrayList<>();
 
     public static void initFromConfig(EngineConfig cfg) {
         EngineCore.cfg = cfg;
@@ -101,6 +105,19 @@ public class EngineCore {
 
         //UIElement e = new UIElement(new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f), 0, Colors.black_light);
         //UIMaster.elements.add(e);
+
+        try {
+            System.setProperty("net.java.games.input.librarypath", new File(native_root + "/" + OperatingSystem.getOSforLWJGLNatives() + "/").getAbsolutePath());
+            Controllers.create();
+            if(Controllers.getControllerCount() >= 1) {
+                Controller con = Controllers.getController(0);
+                listenToControllers.add(con);
+                System.out.println("Controller: " + con.getName());
+            }
+        } catch(LWJGLException e) {
+            Log.log("No controllers found");
+            e.printStackTrace();
+        }
 
         fullscreenMode = Display.getDesktopDisplayMode();
 
@@ -203,6 +220,8 @@ public class EngineCore {
             PrefabManager.savePrefabs();
             loader.cleanUp();
             MasterFontRenderer.cleanUp();
+            MasterRenderer.getFbos().keySet().forEach(EngineCore::destroyFBO);
+            destroyFBO(MasterRenderer.getFinalFBO());
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -265,6 +284,12 @@ public class EngineCore {
         normalizedY *= y_scale*1.57f;
         //System.out.println(x_scale + " " + y_scale + " " + frustum_length + " " + aspectRatio);
         return new Vector2f((float)normalizedX, (float)normalizedY);
+    }
+
+    public static void destroyFBO(FBO fbo) {
+        GL30.glDeleteFramebuffers(fbo.getFboID());
+        GL11.glDeleteTextures(fbo.getColorTextureID());
+        GL30.glDeleteRenderbuffers(fbo.getDepthRenderBufferID());
     }
 
 }

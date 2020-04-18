@@ -47,7 +47,7 @@ public class Timer {
     public void update() {
         float dist = start - end;
         float update = dist/time;
-
+        //System.out.println("u " + dist + " " + update + " " + value);
         value += update*-1;
 
         if(code != null) {

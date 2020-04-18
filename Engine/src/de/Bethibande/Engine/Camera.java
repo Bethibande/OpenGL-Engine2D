@@ -14,12 +14,12 @@ public class Camera {
     private float rotation;
     @Getter
     @Setter
-    private float scale;
+    private float zoom;
 
-    public Camera(Vector2f position, float rotation, float scale) {
+    public Camera(Vector2f position, float rotation, float zoom) {
         this.position = position;
         this.rotation = rotation;
-        this.scale = scale;
+        this.zoom = zoom;
     }
 
 }
