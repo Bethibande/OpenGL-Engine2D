@@ -7,6 +7,7 @@ import de.Bethibande.Engine.Fonts.fontMeshCreator.MasterFontRenderer;
 import de.Bethibande.Engine.Input.Input;
 import de.Bethibande.Engine.Input.InputManager;
 import de.Bethibande.Engine.Physics.PhysicsEngine;
+import de.Bethibande.Engine.Rendering.postProcessing.PostProcessing;
 import de.Bethibande.Engine.TimerManager;
 import de.Bethibande.Engine.UI.UIMaster;
 import de.Bethibande.Engine.UI.rendering.UIRenderer;
@@ -23,8 +24,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
 
 public class MasterRenderer {
@@ -40,7 +40,7 @@ public class MasterRenderer {
     private static Matrix4f projectionMatrix = Maths.createProjectionMatrix();
 
     @Getter
-    private static HashMap<FBO, Float> fbos = new HashMap<>();
+    private static LinkedHashMap<FBO, Float> fbos = new LinkedHashMap<>();
     @Getter
     private static FBO finalFBO = new FBO(Display.getWidth(), Display.getHeight());
 
@@ -105,6 +105,7 @@ public class MasterRenderer {
 
     private static void render() {
         PhysicsEngine.update();
+        PostProcessing.update();
 
         prepare();
         renderer.prepare();
@@ -127,9 +128,13 @@ public class MasterRenderer {
         }
 
         merger.prepare();
+        Iterator<String> names = EngineCore.currentScene.getLayers().keySet().iterator();
         for(FBO fbo : fbos.keySet()) {
-            merger.render(fbo);
+            float index = fbos.get(fbo);
+            merger.render(index, PostProcessing.postProcessing(names.next(), fbo));
         }
+
+        finalFBO = PostProcessing.finalPostProcessing(finalFBO);
         fRenderer.prepare();
         fRenderer.render(finalFBO);
 

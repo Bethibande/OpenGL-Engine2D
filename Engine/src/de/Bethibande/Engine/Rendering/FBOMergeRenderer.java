@@ -3,6 +3,7 @@ package de.Bethibande.Engine.Rendering;
 import de.Bethibande.Engine.EngineCore;
 import de.Bethibande.Engine.Entities.FBO;
 import de.Bethibande.Engine.Entities.RawModel;
+import de.Bethibande.Engine.Rendering.shaders.FBOMergeShader;
 import de.Bethibande.Engine.Rendering.shaders.FinalShader;
 import org.lwjgl.opengl.*;
 import org.lwjgl.util.vector.Matrix4f;
@@ -11,7 +12,7 @@ public class FBOMergeRenderer {
 
     // merges all fbos/layers into one fbo that will be rendered to the screen
     // this also fixes some flickering issues
-    private FinalShader shader;
+    private FBOMergeShader shader;
 
     private RawModel quad;
 
@@ -34,7 +35,7 @@ public class FBOMergeRenderer {
                 3,1,2
         };
         quad = EngineCore.loader.loadToVAO(vertices, textureCoords, indices);
-        shader = new FinalShader();
+        shader = new FBOMergeShader();
     }
 
     public void prepare() {
@@ -46,8 +47,10 @@ public class FBOMergeRenderer {
         GL11.glCullFace(GL11.GL_BACK);
     }
 
-    public void render(FBO fbo) {
+    public void render(float index, FBO fbo) {
         shader.start();
+
+        shader.setIndex(index);
 
         GL30.glBindVertexArray(quad.getId());
         GL20.glEnableVertexAttribArray(0);
@@ -65,10 +68,10 @@ public class FBOMergeRenderer {
         shader.stop();
     }
 
-    public void loadProjectionMatrix(Matrix4f mat) {
+    /*public void loadProjectionMatrix(Matrix4f mat) {
         shader.start();
         shader.loadProjectioMatrix(mat);
         shader.stop();
-    }
+    }*/
 
 }
