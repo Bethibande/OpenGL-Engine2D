@@ -29,4 +29,6 @@ public class EngineConfig {
 
     public String mainClass = "test.Core";
 
+    public String javacPath = "C:\\Program Files (x86)\\Java\\jdk1.8.0_191\\bin\\javac.exe";
+
 }

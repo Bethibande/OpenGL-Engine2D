@@ -11,8 +11,6 @@ import de.Bethibande.Engine.FileUtils.FileUpdater;
 import de.Bethibande.Engine.Fonts.fontMeshCreator.MasterFontRenderer;
 import de.Bethibande.Engine.Rendering.MasterRenderer;
 import de.Bethibande.Engine.Rendering.SpriteLoader;
-import de.Bethibande.Engine.UI.UIElement;
-import de.Bethibande.Engine.UI.UIMaster;
 import de.Bethibande.Engine.utils.*;
 import de.Bethibande.Engine.FileUtils.FileUtils;
 import lombok.Getter;
@@ -28,7 +26,6 @@ import org.lwjgl.util.vector.Vector2f;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -60,19 +57,25 @@ public class EngineCore {
     public static boolean physicsPaused = false;
     public static boolean devMode = false;
 
+    public static boolean releaseMode = false;
+
+    @Getter
+    private static TextureQuality textureQuality = TextureQuality.GOOD;
+
     @Getter
     private static List<Controller> listenToControllers = new ArrayList<>();
 
-    public static void initFromConfig(EngineConfig cfg) {
+    public static void initFromConfig(EngineConfig cfg) throws Exception {
         EngineCore.cfg = cfg;
         if(!cfg.fulllscreen) init(cfg.title, cfg.resizable, cfg.vsync, cfg.width, cfg.height);
         if(cfg.fulllscreen) init(cfg.title, cfg.resizable, cfg.vsync, FULLSCREEN, FULLSCREEN);
     }
 
-    private static void init(String title, boolean resizable, boolean vsync, int width, int height) {
+    private static void init(String title, boolean resizable, boolean vsync, int width, int height) throws Exception {
         if(!GLContext.getCapabilities().GL_EXT_framebuffer_object) {
             Log.logError("FBOs are not supported on this device!");
-            stop();
+            stopWithoutExit();
+            throw new Exception("Your graphics card has no fbo support!");
         }
         if(width == FULLSCREEN) {
             DisplayManager.createDisplay(title, resizable, vsync);
@@ -174,7 +177,19 @@ public class EngineCore {
         DiscordRPC.discordUpdatePresence(rp);
     }
 
-    public static void loadProject(String name) {
+    public static void startExport(File path) throws Exception {
+        project_root = path;
+        linkNatives();
+        try {
+            Display.create();
+        } catch(LWJGLException e) {
+            e.printStackTrace();
+        }
+        project_config = new File(project_root + "/engine_config.cfg");
+        initFromConfig(FileUtils.loadConfig(project_config));
+    }
+
+    public static void loadProject(String name) throws Exception {
         project_root = new File(project_root.toString().replace("%%project%%", name));
         if(!engine_root.exists()) {
             engine_root.mkdirs();
@@ -195,7 +210,9 @@ public class EngineCore {
             project_root.mkdir();
             FileUtils.createProjectFiles();
         }
-        project_config = new File(project_root + "/engine_config.cfg");
+        if(ArgumentParser.args.containsKey("--configOverride")) {
+            project_config = new File(ArgumentParser.args.get("--configOverride"));
+        } else project_config = new File(project_root + "/engine_config.cfg");
         initFromConfig(FileUtils.loadConfig(project_config));
     }
 
@@ -203,6 +220,25 @@ public class EngineCore {
         try {
             String system = OperatingSystem.getOSforLWJGLNatives();
             System.setProperty("org.lwjgl.librarypath", native_root + "\\" + system);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void stopWithoutExit() {
+        Log.log("stopping...!");
+
+        try {
+            updater.interrupt();
+
+            DiscordRPC.discordShutdown();
+            SpriteLoader.cleanUP();
+            FileUtils.saveConfig(cfg, project_config);
+            PrefabManager.savePrefabs();
+            loader.cleanUp();
+            MasterFontRenderer.cleanUp();
+            MasterRenderer.getFbos().keySet().forEach(EngineCore::destroyFBO);
+            destroyFBO(MasterRenderer.getFinalFBO());
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -290,6 +326,13 @@ public class EngineCore {
         GL30.glDeleteFramebuffers(fbo.getFboID());
         GL11.glDeleteTextures(fbo.getColorTextureID());
         GL30.glDeleteRenderbuffers(fbo.getDepthRenderBufferID());
+    }
+
+    public enum TextureQuality {
+        // GOOD = the original texture size/resolution
+        // MIDDLE = 0.75 of the original texture size/resolution
+        // LOW = 0.5 of the original texture size/resolution
+        GOOD, MIDDLE, LOW
     }
 
 }

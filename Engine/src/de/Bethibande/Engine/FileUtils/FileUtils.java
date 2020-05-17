@@ -11,6 +11,8 @@ import javafx.scene.Scene;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,7 +76,60 @@ public class FileUtils {
           "}"
         };
         write(core, coreContent);
+        File run = new File(EngineCore.project_root + "/run.bat");
+        String[] runBat = {"java -cp \"../../Engine.jar\" de.Bethibande.Engine.Boot.Bootstrap " + EngineCore.project_root.getName() + " --devMode:true", "PAUSE"};
+        write(run, runBat);
 
+    }
+
+    public static void copyDirectory(File f, File to, List<String> excludeFileTypes) {
+        if(f.isDirectory()) {
+            System.out.println("#2" + f.getName());
+            File newF = new File(to + "/" + f.getName() + "/");
+            newF.mkdirs();
+            newF.mkdir();
+            for(File f2 : f.listFiles()) {
+                copyDirectory(f2, newF);
+            }
+        } else {
+            try {
+                System.out.println("#" + f.getName());
+                int i = 0;
+                while(i < excludeFileTypes.size()) {
+                    //System.out.println(f.getName() + " ." + excludeFileTypes.get(i));
+                    if(f.getName().endsWith("." + excludeFileTypes.get(i))) return;
+                    i++;
+                }
+                Files.copy(f.toPath(), new File(to + "/" + f.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void copyDirectory(File f, File to) {
+        if(f.isDirectory()) {
+            File newF = new File(to + "/" + f.getName() + "/");
+            newF.mkdirs();
+            newF.mkdir();
+            for(File f2 : f.listFiles()) {
+                copyDirectory(f2, newF);
+            }
+        } else {
+            try {
+                Files.copy(f.toPath(), new File(to + "/" + f.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void copyFile(File f, File to) {
+        try {
+            Files.copy(f.toPath(), to.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static boolean deleteDirectory(File dir) {

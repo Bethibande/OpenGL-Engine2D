@@ -8,6 +8,8 @@ import org.newdawn.slick.opengl.PNGDecoder;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,6 +25,9 @@ public class SpriteLoader {
     public static void reloadResourceTexture(String name, String path) {
         Log.log("Reload texture '" + name + "' '" + path + "'!");
         try {
+            //BufferedImage img = ImageIO.read(SpriteLoader.class.getResourceAsStream(path));
+            //if(EngineCore.getTextureQuality() == EngineCore.TextureQuality.MIDDLE) img = Images.resize(img, (int)(img.getWidth()*0.75f), (int)(img.getHeight()*0.75f));
+            //if(EngineCore.getTextureQuality() == EngineCore.TextureQuality.LOW) img = Images.resize(img, (int)(img.getWidth()*0.5f), (int)(img.getHeight()*0.5f));
             PNGDecoder decoder = new PNGDecoder(SpriteLoader.class.getResourceAsStream(path));
 
             //create a byte buffer big enough to store RGBA values

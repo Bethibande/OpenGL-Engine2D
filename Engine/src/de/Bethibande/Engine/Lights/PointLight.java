@@ -5,8 +5,9 @@ import lombok.Setter;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class PointLight {
+public class PointLight implements Serializable {
 
     @Getter
     @Setter

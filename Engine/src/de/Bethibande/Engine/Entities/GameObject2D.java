@@ -5,8 +5,9 @@ import lombok.Setter;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.geom.Area;
+import java.io.Serializable;
 
-public class GameObject2D {
+public class GameObject2D implements Serializable {
 
     @Getter
     @Setter
@@ -16,7 +17,7 @@ public class GameObject2D {
     private Vector2f size;
     @Getter
     @Setter
-    private Texture model;
+    private transient Texture model;
     @Getter
     @Setter
     private float rotation;
@@ -48,6 +49,9 @@ public class GameObject2D {
     @Getter
     @Setter
     private boolean isVisible = true;
+    @Getter
+    @Setter
+    private transient RawModel customModel;
 
     public GameObject2D(Vector2f position, Vector2f size, Texture model, float rotation, String prefab) {
         this.position = position;

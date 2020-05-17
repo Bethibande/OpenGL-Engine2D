@@ -9,8 +9,6 @@ import de.Bethibande.Engine.Input.InputManager;
 import de.Bethibande.Engine.Physics.PhysicsEngine;
 import de.Bethibande.Engine.Rendering.postProcessing.PostProcessing;
 import de.Bethibande.Engine.TimerManager;
-import de.Bethibande.Engine.UI.UIMaster;
-import de.Bethibande.Engine.UI.rendering.UIRenderer;
 import de.Bethibande.Engine.utils.Date;
 import de.Bethibande.Engine.utils.DisplayManager;
 import de.Bethibande.Engine.utils.Log;
@@ -34,7 +32,7 @@ public class MasterRenderer {
     public static final DefaultRenderer renderer = new DefaultRenderer();
     private static final FBOMergeRenderer merger = new FBOMergeRenderer();
     private static final FinalRenderer fRenderer = new FinalRenderer();
-    public static final UIRenderer ui = new UIRenderer();
+    //public static final UIRenderer ui = new UIRenderer();
     public static final List<Runnable> gameLogic = new ArrayList<>();
 
     private static Matrix4f projectionMatrix = Maths.createProjectionMatrix();
@@ -137,8 +135,6 @@ public class MasterRenderer {
         finalFBO = PostProcessing.finalPostProcessing(finalFBO);
         fRenderer.prepare();
         fRenderer.render(finalFBO);
-
-        if(!UIMaster.elements.isEmpty()) ui.render(UIMaster.elements);
     }
 
     private static void prepare() {

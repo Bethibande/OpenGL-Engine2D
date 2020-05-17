@@ -11,4 +11,14 @@ public class ArrayUtils {
         return false;
     }
 
+    public static float[] FloatTofloat(Float[] arr) {
+        float[] a = new float[arr.length];
+        int i = 0;
+        while(i < arr.length) {
+            a[i] = arr[i];
+            i++;
+        }
+        return a;
+    }
+
 }

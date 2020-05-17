@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.lwjgl.util.vector.Vector2f;
 
-public class Prefab {
+import java.io.Serializable;
+
+public class Prefab implements Serializable {
 
     @Getter
     @Setter

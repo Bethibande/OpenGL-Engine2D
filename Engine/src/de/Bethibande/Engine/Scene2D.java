@@ -2,16 +2,18 @@ package de.Bethibande.Engine;
 
 import de.Bethibande.Engine.Entities.GameObject2D;
 import de.Bethibande.Engine.Lights.PointLight;
+import de.Bethibande.Engine.UI.UIElement;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.io.Serializable;
+import java.util.*;
 
-public class Scene2D {
+public class Scene2D implements Serializable {
 
     @Getter
     private List<PointLight> lights = new ArrayList<>();
+    @Getter
+    private List<UIElement> uiElements = new ArrayList<>();
     @Getter
     private LinkedHashMap<String, List<GameObject2D>> layers = new LinkedHashMap<>();
 

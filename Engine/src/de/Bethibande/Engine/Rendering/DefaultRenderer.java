@@ -75,6 +75,11 @@ public class DefaultRenderer {
         boolean cull = true;
         for(GameObject2D obj : objs) {
             if(obj.isVisible()) {
+                if(obj.getCustomModel() != null) {
+                    GL30.glBindVertexArray(obj.getCustomModel().getId());
+                    GL20.glEnableVertexAttribArray(0);
+                    GL20.glEnableVertexAttribArray(1);
+                }
                 if(obj.getModel().getId() != lastTexture) {
                     GL13.glActiveTexture(GL13.GL_TEXTURE0);
                     GL11.glBindTexture(GL11.GL_TEXTURE_2D, obj.getModel().getId());
@@ -90,7 +95,13 @@ public class DefaultRenderer {
                 }
                 shader.loadTransformatiobMatrix(Maths.createTransformationMatrix(obj));
 
-                GL11.glDrawElements(GL11.GL_TRIANGLES, quad.getVertices(), GL11.GL_UNSIGNED_INT, 0);
+                if(obj.getCustomModel() == null) {
+                    GL11.glDrawElements(GL11.GL_TRIANGLES, quad.getVertices(), GL11.GL_UNSIGNED_INT, 0);
+                    GL30.glBindVertexArray(quad.getId());
+                } else {
+                    GL11.glDrawElements(GL11.GL_TRIANGLES, obj.getCustomModel().getVertices(), GL11.GL_UNSIGNED_INT, 0);
+                }
+
             }
         }
         GL20.glDisableVertexAttribArray(0);

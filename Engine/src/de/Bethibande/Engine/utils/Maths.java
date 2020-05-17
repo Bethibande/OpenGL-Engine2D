@@ -3,9 +3,7 @@ package de.Bethibande.Engine.utils;
 import de.Bethibande.Engine.Camera;
 import de.Bethibande.Engine.EngineCore;
 import de.Bethibande.Engine.Entities.GameObject2D;
-import de.Bethibande.Engine.UI.rendering.UIDrawable;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -143,24 +141,24 @@ public class Maths {
         return m;
     }*/
 
-    public static Matrix4f createTransformationMatrix(UIDrawable obj) {
+    /*public static Matrix4f createTransformationMatrix(UIDrawable obj) {
         Matrix4f matrix = new Matrix4f();
         matrix.setIdentity();
         Matrix4f.translate(new Vector2f(obj.getPosition().x, obj.getPosition().y), matrix, matrix);
         Matrix4f.rotate((float) Math.toRadians(obj.getRotation()-90), new Vector3f(0,0, 1), matrix, matrix);
         Matrix4f.scale(new Vector3f(obj.getSize().x,obj.getSize().y, 1.0f), matrix, matrix);
         return matrix;
-    }
+    }*/
 
     public static Matrix4f createTransformationMatrix(GameObject2D obj) {
         Matrix4f matrix = new Matrix4f();
         matrix.setIdentity();
-        Matrix4f.translate(new Vector2f(obj.getPosition().x, obj.getPosition().y), matrix, matrix);
+        Matrix4f.translate(new Vector2f(obj.getPosition().x*EngineCore.cam.getZoom(), obj.getPosition().y*EngineCore.cam.getZoom()), matrix, matrix);
         Matrix4f.rotate((float) Math.toRadians(obj.getRotation()), new Vector3f(0,0, 1), matrix, matrix);
         //if(obj.isFlipped()) Matrix4f.rotate((float) Math.toRadians(80), new Vector3f(1,0, 0), matrix, matrix);
         if(obj.isFlipped()) {
-            Matrix4f.scale(new Vector3f(-obj.getSize().x,obj.getSize().y, 1.0f), matrix, matrix);
-        } else Matrix4f.scale(new Vector3f(obj.getSize().x,obj.getSize().y, 1.0f), matrix, matrix);
+            Matrix4f.scale(new Vector3f(-obj.getSize().x*EngineCore.cam.getZoom(),obj.getSize().y*EngineCore.cam.getZoom(), 1.0f), matrix, matrix);
+        } else Matrix4f.scale(new Vector3f(obj.getSize().x*EngineCore.cam.getZoom(),obj.getSize().y*EngineCore.cam.getZoom(), 1.0f), matrix, matrix);
         return matrix;
     }
 

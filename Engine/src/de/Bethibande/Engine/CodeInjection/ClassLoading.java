@@ -56,7 +56,7 @@ public class ClassLoading {
             b.append(" " + clazz.getPath());
         }
         try {
-            String cmd = "C:\\Program Files (x86)\\Java\\jdk1.8.0_191\\bin\\javac.exe" + b + " -d " + build + " -cp C:\\GameEngine\\Engine.jar";
+            String cmd = EngineCore.cfg.javacPath + b + " -d " + build + " -cp C:\\GameEngine\\Engine.jar";
             if(ArgumentParser.args.containsKey("--cp")) {
                 cmd = cmd +";" + ArgumentParser.args.get("--cp");
             }
