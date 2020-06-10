@@ -32,7 +32,8 @@ import java.util.List;
 
 public class EngineCore {
 
-    public static final int FULLSCREEN = -1;
+    public static final int FULLSCREEN = -0x1;
+    public static final int NO_FPS_CAP = -0x2;
 
     public static final File engine_root = new File("C:/GameEngine/");
     public static final File native_root = new File(engine_root + "/natives/");
@@ -64,6 +65,8 @@ public class EngineCore {
 
     @Getter
     private static List<Controller> listenToControllers = new ArrayList<>();
+
+    public static float deltaTime = 0;
 
     public static void initFromConfig(EngineConfig cfg) throws Exception {
         EngineCore.cfg = cfg;

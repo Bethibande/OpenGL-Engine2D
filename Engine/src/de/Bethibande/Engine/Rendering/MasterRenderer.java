@@ -66,6 +66,10 @@ public class MasterRenderer {
         try {
             while (!Display.isCloseRequested()) {
                 //-----------------------------------------------
+                // delta time
+                long startTime = System.nanoTime();
+
+                //-----------------------------------------------
                 // game logic
                 if(EngineCore.isInitializedDiscord()) {
                     DiscordRPC.discordRunCallbacks();
@@ -94,6 +98,11 @@ public class MasterRenderer {
                         Log.log("[FPS] " + last_FPS);
                     }
                 }
+                //-----------------------------------------------
+                // delta time
+                long endTime = System.nanoTime();
+                long time = endTime-startTime;
+                EngineCore.deltaTime = time/1000000f;
             }
             EngineCore.stop();
         } catch(Exception e) {

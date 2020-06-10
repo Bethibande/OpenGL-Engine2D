@@ -153,7 +153,7 @@ public class Maths {
     public static Matrix4f createTransformationMatrix(GameObject2D obj) {
         Matrix4f matrix = new Matrix4f();
         matrix.setIdentity();
-        Matrix4f.translate(new Vector2f(obj.getPosition().x*EngineCore.cam.getZoom(), obj.getPosition().y*EngineCore.cam.getZoom()), matrix, matrix);
+        Matrix4f.translate(new Vector2f(obj.getPosition().x, obj.getPosition().y), matrix, matrix);
         Matrix4f.rotate((float) Math.toRadians(obj.getRotation()), new Vector3f(0,0, 1), matrix, matrix);
         //if(obj.isFlipped()) Matrix4f.rotate((float) Math.toRadians(80), new Vector3f(1,0, 0), matrix, matrix);
         if(obj.isFlipped()) {

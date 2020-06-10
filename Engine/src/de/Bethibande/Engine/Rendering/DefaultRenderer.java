@@ -3,6 +3,7 @@ package de.Bethibande.Engine.Rendering;
 import de.Bethibande.Engine.EngineCore;
 import de.Bethibande.Engine.Entities.FBO;
 import de.Bethibande.Engine.Entities.GameObject2D;
+import de.Bethibande.Engine.Entities.ObjectComponent;
 import de.Bethibande.Engine.Entities.RawModel;
 import de.Bethibande.Engine.Rendering.shaders.DefaultShader;
 import de.Bethibande.Engine.utils.Maths;
@@ -73,8 +74,16 @@ public class DefaultRenderer {
         shader.loadScreenClip();
         int lastTexture = -1;
         boolean cull = true;
-        for(GameObject2D obj : objs) {
+        int i = 0;
+        while(i < objs.size()) {
+            GameObject2D obj = objs.get(i);
             if(obj.isVisible()) {
+                int i2 = 0;
+                while(i2 < obj.getComponents().size()) {
+                    ObjectComponent oc = obj.getComponents().get(i2);
+                    oc.update();
+                    i2++;
+                }
                 if(obj.getCustomModel() != null) {
                     GL30.glBindVertexArray(obj.getCustomModel().getId());
                     GL20.glEnableVertexAttribArray(0);
@@ -103,6 +112,7 @@ public class DefaultRenderer {
                 }
 
             }
+            i++;
         }
         GL20.glDisableVertexAttribArray(0);
         GL20.glDisableVertexAttribArray(1);

@@ -4,8 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.lwjgl.util.vector.Vector2f;
 
-import java.awt.geom.Area;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameObject2D implements Serializable {
 
@@ -52,6 +53,9 @@ public class GameObject2D implements Serializable {
     @Getter
     @Setter
     private transient RawModel customModel;
+    @Getter
+    @Setter
+    private List<ObjectComponent> components;
 
     public GameObject2D(Vector2f position, Vector2f size, Texture model, float rotation, String prefab) {
         this.position = position;
@@ -59,6 +63,7 @@ public class GameObject2D implements Serializable {
         this.model = model;
         this.rotation = rotation;
         this.prefab = prefab;
+        this.components = new ArrayList<>();
     }
 
 }
