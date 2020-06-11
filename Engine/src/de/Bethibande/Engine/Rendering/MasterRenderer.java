@@ -76,11 +76,16 @@ public class MasterRenderer {
                 }
                 InputManager.update();
                 TimerManager.update();
-                for(Controller con : EngineCore.getListenToControllers()) {
+                int i = 0;
+                while(i < EngineCore.getListenToControllers().size()) {
+                    Controller con = EngineCore.getListenToControllers().get(i);
                     con.poll();
+                    i++;
                 }
-                for (Runnable r : gameLogic) {
-                    r.run();
+                i = 0;
+                while(i < gameLogic.size()) {
+                    gameLogic.get(i).run();
+                    i++;
                 }
                 //-----------------------------------------------
                 // render
@@ -116,31 +121,44 @@ public class MasterRenderer {
 
         prepare();
         renderer.prepare();
+        //-----------------------------------------------
+        // delete old fbos
         if(!fbos.isEmpty()) {
-            fbos.keySet().forEach(EngineCore::destroyFBO);
+            //fbos.keySet().forEach(EngineCore::destroyFBO);
             fbos.clear();
         }
+        //-----------------------------------------------
+        // render each layer to its own fbo
         if(EngineCore.currentScene != null) {
             float index = EngineCore.currentScene.getLayers().keySet().size()*0.01f+1;
             int i = 0;
-            for(String l : EngineCore.currentScene.getLayers().keySet()) {
+            Iterator<String> it = EngineCore.currentScene.getLayers().keySet().iterator();
+            while(it.hasNext()) {
+                String l = it.next();
                 index -= 0.01f;
                 if(i == wireframeLayer) {
                     renderer.setWireframe(true);
                 } else renderer.setWireframe(false);
-                FBO fbo = renderer.render(EngineCore.currentScene.getLayers().get(l));
+                FBO fbo = EngineCore.currentScene.getFbos().get(l);
                 fbos.put(fbo, index);
+                renderer.render(EngineCore.currentScene.getLayers().get(l), fbo);
                 i++;
             }
         }
-
+        //-----------------------------------------------
+        // merge fbos to one final fbo and apply post processing
         merger.prepare();
         Iterator<String> names = EngineCore.currentScene.getLayers().keySet().iterator();
-        for(FBO fbo : fbos.keySet()) {
+        Iterator<String> it = EngineCore.currentScene.getFbos().keySet().iterator();
+        while(it.hasNext()) {
+            FBO fbo = EngineCore.currentScene.getFbos().get(it.next());
             float index = fbos.get(fbo);
             merger.render(index, PostProcessing.postProcessing(names.next(), fbo));
         }
+        merger.stop();
 
+        //-----------------------------------------------
+        // apply final post processing and render final fbo to screen
         finalFBO = PostProcessing.finalPostProcessing(finalFBO);
         fRenderer.prepare();
         fRenderer.render(finalFBO);

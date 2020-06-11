@@ -8,6 +8,7 @@ import de.Bethibande.Engine.Entities.FBO;
 import de.Bethibande.Engine.Entities.PrefabManager;
 import de.Bethibande.Engine.Error.EngineError;
 import de.Bethibande.Engine.FileUtils.FileUpdater;
+import de.Bethibande.Engine.Fonts.fontMeshCreator.FontType;
 import de.Bethibande.Engine.Fonts.fontMeshCreator.MasterFontRenderer;
 import de.Bethibande.Engine.Rendering.MasterRenderer;
 import de.Bethibande.Engine.Rendering.SpriteLoader;
@@ -43,6 +44,9 @@ public class EngineCore {
 
     public static EngineConfig cfg;
     public static Loader loader = new Loader();
+
+    // default engine font
+    public static FontType font;
 
     public static List<File> handleUpdate = new ArrayList<>();
     public static FileUpdater updater;
@@ -93,6 +97,7 @@ public class EngineCore {
         }
         Bootscreen.progress = 200;
         Bootscreen.action = "Load objects..";
+        font = new FontType(loader.loadTexture2(engine_root + "/font/sans-serif.png"), new File(engine_root + "/font/sans-serif.fnt"));
         updater = new FileUpdater();
         updater.start();
         handleFileUpdates();
