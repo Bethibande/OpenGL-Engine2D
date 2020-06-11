@@ -52,11 +52,13 @@ public class DefaultRenderer {
         screenSize = Display.getDesktopDisplayMode();
     }
 
-    public FBO render(List<GameObject2D> objs) {
+    public FBO render(List<GameObject2D> objs, FBO f) {
         shader.start();
-        FBO f = new FBO(Display.getWidth(), Display.getHeight());
+        //FBO f = new FBO(Display.getWidth(), Display.getHeight());
         EXTFramebufferObject.glBindFramebufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, f.getFboID());
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, f.getFboID());
+        GL11.glClearColor((float)EngineCore.cfg.clearColor.getRed()/255f, (float)EngineCore.cfg.clearColor.getGreen()/255f, (float)EngineCore.cfg.clearColor.getBlue()/255f, 0f);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
         shader.loadZoom(EngineCore.cam.getZoom());
 

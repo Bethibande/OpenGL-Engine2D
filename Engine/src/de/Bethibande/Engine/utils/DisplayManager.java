@@ -39,6 +39,9 @@ public class DisplayManager {
 
     public static void update() {
         if(EngineCore.cfg.FPS != EngineCore.NO_FPS_CAP) Display.sync(EngineCore.cfg.FPS);
+        if(EngineCore.cfg.FPS == EngineCore.NO_FPS_CAP && !Display.isActive()) {
+            Display.sync(120);
+        }
         Display.update();
     }
 

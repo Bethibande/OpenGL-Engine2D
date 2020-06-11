@@ -1,5 +1,8 @@
 package de.Bethibande.Engine.utils;
 
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+
 public class ArrayUtils {
 
     public static boolean contains(Object[] array, Object obj) {
@@ -19,6 +22,16 @@ public class ArrayUtils {
             i++;
         }
         return a;
+    }
+
+    public static int getKeyIndexInLinkedHashMap(LinkedHashMap<?, ?> map, Object key) {
+        Iterator<?> it = map.keySet().iterator();
+        int i = 0;
+        while(it.hasNext()) {
+            if(it.next() == key) return i;
+            i++;
+        }
+        return -1;
     }
 
 }

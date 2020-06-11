@@ -47,18 +47,24 @@ public class PostProcessing {
 
     public static FBO postProcessing(String name, FBO layer) {
         FBO fbo = layer;
-        for(PostProcessingRenderer ppr : pc.get(name)) {
+        int i = 0;
+        while(i < pc.get(name).size()) {
+            PostProcessingRenderer ppr = pc.get(name).get(i);
             ppr.render(fbo);
             fbo = ppr.getFBO();
+            i++;
         }
         return fbo;
     }
 
     public static FBO finalPostProcessing(FBO scene) {
         FBO fbo = scene;
-        for(PostProcessingRenderer ppr : finalPP) {
+        int i = 0;
+        while(i < finalPP.size()) {
+            PostProcessingRenderer ppr = finalPP.get(i);
             ppr.render(fbo);
             fbo = ppr.getFBO();
+            i++;
         }
         return fbo;
     }
