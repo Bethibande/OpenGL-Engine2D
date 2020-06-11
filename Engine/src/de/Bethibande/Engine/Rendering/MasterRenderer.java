@@ -124,7 +124,7 @@ public class MasterRenderer {
         //-----------------------------------------------
         // delete old fbos
         if(!fbos.isEmpty()) {
-            fbos.keySet().forEach(EngineCore::destroyFBO);
+            //fbos.keySet().forEach(EngineCore::destroyFBO);
             fbos.clear();
         }
         //-----------------------------------------------
@@ -149,13 +149,11 @@ public class MasterRenderer {
         // merge fbos to one final fbo and apply post processing
         merger.prepare();
         Iterator<String> names = EngineCore.currentScene.getLayers().keySet().iterator();
-        int i = 0;
         Iterator<String> it = EngineCore.currentScene.getFbos().keySet().iterator();
         while(it.hasNext()) {
             FBO fbo = EngineCore.currentScene.getFbos().get(it.next());
             float index = fbos.get(fbo);
             merger.render(index, PostProcessing.postProcessing(names.next(), fbo));
-            i++;
         }
         merger.stop();
 

@@ -45,7 +45,6 @@ public class FBOMergeRenderer {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glCullFace(GL11.GL_BACK);
-        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
         shader.start();
         GL30.glBindVertexArray(quad.getId());
         GL20.glEnableVertexAttribArray(0);
@@ -63,6 +62,7 @@ public class FBOMergeRenderer {
 
     public void stop() {
         shader.stop();
+        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
         GL20.glDisableVertexAttribArray(0);
         GL20.glDisableVertexAttribArray(1);
         GL30.glBindVertexArray(0);
