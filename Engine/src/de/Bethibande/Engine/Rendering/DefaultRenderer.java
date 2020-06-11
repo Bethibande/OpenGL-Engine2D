@@ -72,14 +72,19 @@ public class DefaultRenderer {
         shader.loadViewMatrix(EngineCore.cam);
         shader.loadScreenClip();
         int lastTexture = -1;
+        int lastVertexArray = -1;
         boolean cull = true;
         int i = 0;
         while(i < objs.size()) {
             GameObject2D obj = objs.get(i);
             if(obj.isVisible()) {
-                GL30.glBindVertexArray(quad.getId());
-                GL20.glEnableVertexAttribArray(0);
-                GL20.glEnableVertexAttribArray(1);
+                if(lastVertexArray == -1 || (lastVertexArray != quad.getId() && obj.getCustomModel() == null)) {
+                    lastVertexArray = quad.getId();
+                    GL30.glBindVertexArray(quad.getId());
+                    GL20.glEnableVertexAttribArray(0);
+                    GL20.glEnableVertexAttribArray(1);
+                }
+
                 int i2 = 0;
                 while(i2 < obj.getComponents().size()) {
                     ObjectComponent oc = obj.getComponents().get(i2);
@@ -87,6 +92,7 @@ public class DefaultRenderer {
                     i2++;
                 }
                 if(obj.getCustomModel() != null) {
+                    lastVertexArray = obj.getCustomModel().getId();
                     GL30.glBindVertexArray(obj.getCustomModel().getId());
                     GL20.glEnableVertexAttribArray(0);
                     GL20.glEnableVertexAttribArray(1);
@@ -96,7 +102,7 @@ public class DefaultRenderer {
                     GL11.glBindTexture(GL11.GL_TEXTURE_2D, obj.getModel().getId());
                     lastTexture = obj.getModel().getId();
                 }
-                if(obj.isFlipped()) {
+                if(cull && obj.isFlipped()) {
                     GL11.glDisable(GL11.GL_CULL_FACE);
                     cull = false;
                 }
