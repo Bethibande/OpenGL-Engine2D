@@ -8,12 +8,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ProjectExporter {
 
     private static File build;
     private static String javac;
-    private static List<File> classes = new ArrayList<>();
+    private static final List<File> classes = new ArrayList<>();
 
     //java -jar Engine.jar test-project C:\Program%%_%%Files%%_%%(x86)\Java\jdk1.8.0_191\bin\javac.exe --releaseProject:null
 
@@ -34,7 +35,7 @@ public class ProjectExporter {
     }
 
     private static void collectClasses(File root) {
-        for(File f : root.listFiles()) {
+        for(File f : Objects.requireNonNull(root.listFiles())) {
             if(!f.isDirectory()) {
                 if(f.getName().endsWith(".java")) {
                     classes.add(f);
@@ -45,10 +46,10 @@ public class ProjectExporter {
 
     private static void compile() {
         build.mkdirs();
-        build.mkdir();
+        //build.mkdir();
         StringBuilder b = new StringBuilder();
         for(File clazz : classes) {
-            b.append(" " + clazz.getPath());
+            b.append(" ").append(clazz.getPath());
         }
         try {
             String cmd = javac + b + " -d " + build + " -cp C:\\GameEngine\\Engine.jar";

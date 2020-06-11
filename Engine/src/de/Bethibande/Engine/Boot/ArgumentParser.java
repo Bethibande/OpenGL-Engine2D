@@ -9,7 +9,7 @@ public class ArgumentParser {
 
     public static HashMap<String, String> args = new HashMap<>();
 
-    public static void parseArguments(String args[]) {
+    public static void parseArguments(String[] args) {
         for(String arg : args) {
             if(arg.contains(":")) {
                 String[] split = arg.split(":", 2);

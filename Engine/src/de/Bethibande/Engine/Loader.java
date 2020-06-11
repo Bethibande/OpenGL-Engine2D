@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.Bethibande.Engine.Entities.RawModel;
+import de.Bethibande.Engine.Error.EngineError;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
@@ -19,16 +20,17 @@ import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
+@SuppressWarnings("unused")
 public class Loader {
 	
-	private List<Integer> vaos = new ArrayList<Integer>();
-	private List<Integer> vbos = new ArrayList<Integer>();
-	private List<Integer> textures = new ArrayList<Integer>();
+	private final List<Integer> vaos = new ArrayList<>();
+	private final List<Integer> vbos = new ArrayList<>();
+	private final List<Integer> textures = new ArrayList<>();
 
 	public RawModel loadToVAO(float[] positions, float[] textureCoords, Integer[] indices){
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
-		FloatBuffer b = storeDataInAttributeList(0,3,positions);
+		storeDataInAttributeList(0,3,positions);
 		storeDataInAttributeList(1,2,textureCoords);
 		unbindVAO();
 		return new RawModel(vaoID,indices.length);
@@ -101,7 +103,14 @@ public class Loader {
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
-		int textureID = texture.getTextureID();
+		int textureID = 0;
+		try {
+			assert texture != null;
+			textureID = texture.getTextureID();
+		} catch(NullPointerException e) {
+			e.printStackTrace();
+			EngineError.openError(e);
+		}
 		textures.add(textureID);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);

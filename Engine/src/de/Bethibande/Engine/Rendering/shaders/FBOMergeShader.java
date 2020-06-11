@@ -1,7 +1,5 @@
 package de.Bethibande.Engine.Rendering.shaders;
 
-import org.lwjgl.util.vector.Matrix4f;
-
 public class FBOMergeShader extends ShaderProgram {
 
     public static final String vertex = "/shader/mergeVertexShader.txt";

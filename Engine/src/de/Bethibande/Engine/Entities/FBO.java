@@ -2,7 +2,6 @@ package de.Bethibande.Engine.Entities;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.lwjgl.opengl.EXTFramebufferObject.*;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
@@ -20,9 +19,9 @@ public class FBO {
     @Setter
     private int depthRenderBufferID;
     @Getter
-    private int width;
+    private final int width;
     @Getter
-    private int height;
+    private final int height;
 
     public FBO(int width, int height) {
         this.width = width;

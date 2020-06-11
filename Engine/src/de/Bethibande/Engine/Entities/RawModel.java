@@ -5,9 +5,9 @@ import lombok.Getter;
 public class RawModel {
 
     @Getter
-    private int id;
+    private final int id;
     @Getter
-    private int vertices;
+    private final int vertices;
 
     public RawModel(int id, int vertices) {
         this.id = id;

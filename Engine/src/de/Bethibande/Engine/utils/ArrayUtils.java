@@ -3,6 +3,7 @@ package de.Bethibande.Engine.utils;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+@SuppressWarnings("unused")
 public class ArrayUtils {
 
     public static boolean contains(Object[] array, Object obj) {

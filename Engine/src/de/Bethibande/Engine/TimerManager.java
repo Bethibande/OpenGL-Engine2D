@@ -1,4 +1,5 @@
 package de.Bethibande.Engine;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,21 +9,20 @@ public class TimerManager {
 
     public static void update() {
         List<Timer> done = new ArrayList<>();
-        for(int l = 0; l < timers.size(); l++) {
-            Timer t = timers.get(l);
-            if(t != null) {
+        for (Timer t : timers) {
+            if (t != null) {
                 t.update();
-                if(t.getStart() < t.getEnd()) {
+                if (t.getStart() < t.getEnd()) {
                     if (t.getValue() >= t.getEnd()) {
                         done.add(t);
                     }
                 }
-                if(t.getStart() > t.getEnd()) {
+                if (t.getStart() > t.getEnd()) {
                     if (t.getValue() <= t.getEnd()) {
                         done.add(t);
                     }
                 }
-                if(t.getStart() == t.getEnd()) {
+                if (t.getStart() == t.getEnd()) {
                     done.add(t);
                 }
             }

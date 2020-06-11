@@ -2,10 +2,8 @@ package de.Bethibande.Engine.Rendering;
 
 import de.Bethibande.Engine.EngineCore;
 import de.Bethibande.Engine.Entities.FBO;
-import de.Bethibande.Engine.Entities.GameObject2D;
 import de.Bethibande.Engine.Entities.RawModel;
 import de.Bethibande.Engine.Rendering.shaders.FinalShader;
-import de.Bethibande.Engine.utils.Maths;
 import org.lwjgl.opengl.*;
 import org.lwjgl.util.vector.Matrix4f;
 
@@ -13,9 +11,9 @@ public class FinalRenderer {
 
     // this renderer is used to render all the fbos/layers to the screen
 
-    private FinalShader shader;
+    private final FinalShader shader;
 
-    private RawModel quad;
+    private final RawModel quad;
 
     public FinalRenderer() {
         float[] textureCoords = {

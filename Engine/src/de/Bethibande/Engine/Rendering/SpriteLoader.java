@@ -1,15 +1,10 @@
 package de.Bethibande.Engine.Rendering;
 
-import de.Bethibande.Engine.EngineCore;
 import de.Bethibande.Engine.utils.Log;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.newdawn.slick.opengl.PNGDecoder;
-import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.TextureLoader;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -231,6 +226,7 @@ public class SpriteLoader {
         return -1;
     }
 
+    @SuppressWarnings("unused")
     public static void unloadSprite(String name) {
         if(textures.containsKey(name)) {
             GL11.glDeleteTextures(textures.get(name));

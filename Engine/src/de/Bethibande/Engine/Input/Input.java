@@ -7,7 +7,7 @@ import org.lwjgl.input.Keyboard;
 public class Input {
 
     @Getter
-    private int key;
+    private final int key;
     @Getter
     @Setter
     private InputType type;
@@ -38,7 +38,7 @@ public class Input {
         }
     }
 
-    public static enum InputType {
+    public enum InputType {
         BUTTON, HOLD
     }
 

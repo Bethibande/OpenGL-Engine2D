@@ -8,9 +8,11 @@ import java.util.List;
 
 public class EventManager {
 
-    private static List<Listener> listeners = new ArrayList<>();
+    private static final List<Listener> listeners = new ArrayList<>();
 
+    @SuppressWarnings("unused")
     public static void registerListener(Listener l) { listeners.add(l); }
+    @SuppressWarnings("unused")
     public static void unregisterListener(Listener l) { listeners.remove(l); }
 
 

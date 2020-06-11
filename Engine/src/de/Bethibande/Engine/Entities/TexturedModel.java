@@ -6,7 +6,7 @@ import lombok.Setter;
 public class TexturedModel {
 
     @Getter
-    private RawModel model;
+    private final RawModel model;
     @Getter
     @Setter
     private Texture texture;

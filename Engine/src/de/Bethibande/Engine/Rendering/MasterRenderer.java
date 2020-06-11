@@ -35,10 +35,10 @@ public class MasterRenderer {
     //public static final UIRenderer ui = new UIRenderer();
     public static final List<Runnable> gameLogic = new ArrayList<>();
 
-    private static Matrix4f projectionMatrix = Maths.createProjectionMatrix();
+    private static final Matrix4f projectionMatrix = Maths.createProjectionMatrix();
 
     @Getter
-    private static LinkedHashMap<FBO, Float> fbos = new LinkedHashMap<>();
+    private static final LinkedHashMap<FBO, Float> fbos = new LinkedHashMap<>();
     @Getter
     private static FBO finalFBO = new FBO(Display.getWidth(), Display.getHeight());
 
@@ -52,13 +52,10 @@ public class MasterRenderer {
         MasterFontRenderer.init(EngineCore.loader);
 
         if(EngineCore.devMode) {
-            InputManager.controlls.add(new Input(Keyboard.KEY_F5, Input.InputType.BUTTON, new Runnable() {
-                @Override
-                public void run() {
-                    wireframeLayer++;
-                    if(wireframeLayer >= EngineCore.currentScene.getLayers().size()) {
-                        wireframeLayer = -1;
-                    }
+            InputManager.controlls.add(new Input(Keyboard.KEY_F5, Input.InputType.BUTTON, () -> {
+                wireframeLayer++;
+                if(wireframeLayer >= EngineCore.currentScene.getLayers().size()) {
+                    wireframeLayer = -1;
                 }
             }));
         }
@@ -136,9 +133,7 @@ public class MasterRenderer {
             while(it.hasNext()) {
                 String l = it.next();
                 index -= 0.01f;
-                if(i == wireframeLayer) {
-                    renderer.setWireframe(true);
-                } else renderer.setWireframe(false);
+                renderer.setWireframe(i == wireframeLayer);
                 FBO fbo = EngineCore.currentScene.getFbos().get(l);
                 fbos.put(fbo, index);
                 renderer.render(EngineCore.currentScene.getLayers().get(l), fbo);

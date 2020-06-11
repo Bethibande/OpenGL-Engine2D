@@ -1,5 +1,6 @@
 package de.Bethibande.Engine.terrain;
 
+@SuppressWarnings("unused")
 public abstract class OctaveGenerator {
     protected final NoiseGenerator[] octaves;
     protected double xScale = 1;

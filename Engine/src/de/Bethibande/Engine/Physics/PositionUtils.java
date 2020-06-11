@@ -9,6 +9,7 @@ public class PositionUtils {
         return Math.sqrt(dSquared);
     }
 
+    @SuppressWarnings("unused")
     public static double angleToVector(Vector2f a, Vector2f b) {
         return Math.atan2(a.y-b.y, a.x-b.x) * 180 / Math.PI;
     }

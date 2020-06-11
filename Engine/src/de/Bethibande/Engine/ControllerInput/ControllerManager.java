@@ -3,6 +3,7 @@ package de.Bethibande.Engine.ControllerInput;
 import de.Bethibande.Engine.EngineCore;
 import org.lwjgl.input.Controller;
 
+@SuppressWarnings("unused")
 public class ControllerManager {
 
 

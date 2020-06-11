@@ -4,17 +4,15 @@ import de.Bethibande.Engine.EngineCore;
 import de.Bethibande.Engine.Entities.FBO;
 import de.Bethibande.Engine.Entities.RawModel;
 import de.Bethibande.Engine.Rendering.shaders.FBOMergeShader;
-import de.Bethibande.Engine.Rendering.shaders.FinalShader;
 import org.lwjgl.opengl.*;
-import org.lwjgl.util.vector.Matrix4f;
 
 public class FBOMergeRenderer {
 
     // merges all fbos/layers into one fbo that will be rendered to the screen
     // this also fixes some flickering issues
-    private FBOMergeShader shader;
+    private final FBOMergeShader shader;
 
-    private RawModel quad;
+    private final RawModel quad;
 
     public FBOMergeRenderer() {
         float[] textureCoords = {

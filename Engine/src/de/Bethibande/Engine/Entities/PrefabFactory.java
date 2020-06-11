@@ -1,6 +1,5 @@
 package de.Bethibande.Engine.Entities;
 
-import de.Bethibande.Engine.EngineCore;
 import de.Bethibande.Engine.Rendering.SpriteLoader;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -8,12 +7,14 @@ import java.util.HashMap;
 
 public class PrefabFactory {
 
-    private static HashMap<String, Integer> textures = new HashMap<>();
+    private static final HashMap<String, Integer> textures = new HashMap<>();
 
+    @SuppressWarnings("unused")
     public static void createPrefab(String name, String texture, boolean resourceLoader, Vector2f size) {
         PrefabManager.addPrefab(new Prefab(name, texture, resourceLoader, size), name);
     }
 
+    @SuppressWarnings("unused")
     public static void createPrefab(Prefab prefab, String name) {
         PrefabManager.addPrefab(prefab, name);
     }

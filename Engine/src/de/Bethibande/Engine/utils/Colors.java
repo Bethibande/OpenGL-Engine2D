@@ -2,6 +2,7 @@ package de.Bethibande.Engine.utils;
 
 import java.awt.*;
 
+@SuppressWarnings("unused")
 public class Colors {
 
     public static final Color orange = Color.decode("#ef6c00");

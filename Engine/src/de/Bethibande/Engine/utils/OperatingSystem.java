@@ -2,7 +2,7 @@ package de.Bethibande.Engine.utils;
 
 public class OperatingSystem {
 
-    private static String system = System.getProperty("os.name").toLowerCase();
+    private static final String system = System.getProperty("os.name").toLowerCase();
 
     public static String getOSforLWJGLNatives()
     {

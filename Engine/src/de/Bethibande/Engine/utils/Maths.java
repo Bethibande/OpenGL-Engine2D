@@ -57,8 +57,8 @@ public class Maths {
         return toOrtho(x, x + width, y + height, y, 0f, 2f);
     }*/
 
-    public static Matrix4f toOrtho(float left, float right, float bottom, float top,
-                                   float near, float far) {
+    @SuppressWarnings("unused")
+    public static Matrix4f toOrtho(float left, float right, float bottom, float top, float near, float far) {
         Matrix4f m = new Matrix4f();
         m.setIdentity();
 

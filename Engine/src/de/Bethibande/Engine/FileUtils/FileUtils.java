@@ -7,7 +7,6 @@ import de.Bethibande.Engine.Entities.Prefab;
 import de.Bethibande.Engine.Entities.PrefabFactory;
 import de.Bethibande.Engine.Entities.PrefabManager;
 import de.Bethibande.Engine.utils.Log;
-import javafx.scene.Scene;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.io.*;
@@ -15,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FileUtils {
 
@@ -63,7 +63,7 @@ public class FileUtils {
         File test = new File(EngineCore.project_root + "/test/");
         File core = new File(test + "/Core.java");
         test.mkdirs();
-        test.mkdir();
+        //test.mkdir();
         createFile(core);
         String[] coreContent = {
           "package test;",
@@ -87,8 +87,8 @@ public class FileUtils {
             System.out.println("#2" + f.getName());
             File newF = new File(to + "/" + f.getName() + "/");
             newF.mkdirs();
-            newF.mkdir();
-            for(File f2 : f.listFiles()) {
+            //newF.mkdir();
+            for(File f2 : Objects.requireNonNull(f.listFiles())) {
                 copyDirectory(f2, newF);
             }
         } else {
@@ -111,8 +111,8 @@ public class FileUtils {
         if(f.isDirectory()) {
             File newF = new File(to + "/" + f.getName() + "/");
             newF.mkdirs();
-            newF.mkdir();
-            for(File f2 : f.listFiles()) {
+            //newF.mkdir();
+            for(File f2 : Objects.requireNonNull(f.listFiles())) {
                 copyDirectory(f2, newF);
             }
         } else {
@@ -135,7 +135,7 @@ public class FileUtils {
     public static boolean deleteDirectory(File dir) {
         if (dir.isDirectory() && dir.exists()) {
             File[] children = dir.listFiles();
-            for (int i = 0; i < children.length; i++) {
+            for (int i = 0; i < Objects.requireNonNull(children).length; i++) {
                 boolean success = deleteDirectory(children[i]);
                 if (!success) {
                     return false;
@@ -160,11 +160,11 @@ public class FileUtils {
     }
 
     public static Scene2D loadScene(File f) {
-        String st = "";
+        StringBuilder st = new StringBuilder();
         for(String str : read(f)) {
-            st = st + str.replaceAll("\t", "");
+            st.append(str.replaceAll("\t", ""));
         }
-        JsonObject obj = new Gson().fromJson(st, JsonElement.class).getAsJsonObject();
+        JsonObject obj = new Gson().fromJson(st.toString(), JsonElement.class).getAsJsonObject();
         Scene2D s = new Scene2D();
         try {
             JsonArray a = obj.getAsJsonArray("layers");
@@ -176,6 +176,7 @@ public class FileUtils {
                 for (int i2 = 0; i2 < jo.size(); i2++) {
                     JsonObject jo2 = jo.get(i2).getAsJsonObject();
                     Prefab p = PrefabManager.getByName(jo2.get("prefab").getAsString());
+                    assert p != null;
                     GameObject2D o = PrefabFactory.createObjectFromPrefab(p);
                     o.setRotation(jo2.get("rotation").getAsFloat());
                     o.setPosition(new Gson().fromJson(jo2.get("position"), Vector2f.class));
@@ -185,7 +186,7 @@ public class FileUtils {
             }
         } catch(Exception e) {
             JsonObject a = obj.getAsJsonObject("layers");
-                a.entrySet().stream().forEach(t -> {
+                a.entrySet().forEach(t -> {
                     String l = t.getKey();
                     s.addLayer(l);
                     System.out.println("Layer name: " + l);
@@ -193,6 +194,7 @@ public class FileUtils {
                     for (int i2 = 0; i2 < jo.size(); i2++) {
                         JsonObject jo2 = jo.get(i2).getAsJsonObject();
                         Prefab p = PrefabManager.getByName(jo2.get("prefab").getAsString());
+                        assert p != null;
                         GameObject2D o = PrefabFactory.createObjectFromPrefab(p);
                         o.setRotation(jo2.get("rotation").getAsFloat());
                         o.setPosition(new Gson().fromJson(jo2.get("position"), Vector2f.class));
@@ -213,16 +215,16 @@ public class FileUtils {
     }
 
     public static Object loadJson(File f) {
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for(String str : read(f)) {
-            s = s + str.replaceAll("\t", "");
+            s.append(str.replaceAll("\t", ""));
         }
         try {
             Gson g = new Gson();
-            JsonObject jo = g.fromJson(s, JsonObject.class);
+            JsonObject jo = g.fromJson(s.toString(), JsonObject.class);
             String clazz = jo.get("className").getAsString().substring(6);
             jo.remove("className");
-            return g.fromJson(s, Class.forName(clazz));
+            return g.fromJson(s.toString(), Class.forName(clazz));
         } catch(ClassNotFoundException e) {
             Log.logError("Couldn't load json from File: '" + f.getPath() + "'! \n");
         }

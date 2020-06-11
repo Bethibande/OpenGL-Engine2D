@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class EngineCore {
 
     public static final int FULLSCREEN = -0x1;
@@ -65,10 +66,10 @@ public class EngineCore {
     public static boolean releaseMode = false;
 
     @Getter
-    private static TextureQuality textureQuality = TextureQuality.GOOD;
+    private static final TextureQuality textureQuality = TextureQuality.GOOD;
 
     @Getter
-    private static List<Controller> listenToControllers = new ArrayList<>();
+    private static final List<Controller> listenToControllers = new ArrayList<>();
 
     public static float deltaTime = 0;
 
@@ -106,8 +107,7 @@ public class EngineCore {
         DisplayManager.loadIcon(cfg.icon);
         Bootscreen.progress = 300;
         Bootscreen.action = "Load default scene..";
-        Scene2D defaultScene = FileUtils.loadScene(new File(cfg.defaultScene));
-        currentScene = defaultScene;
+        currentScene = FileUtils.loadScene(new File(cfg.defaultScene));
         //FontType font = new FontType(loader.loadTexture2("C:/Bethibande/font.png"), new File("C:/Bethibande/font.fnt"));
         //t = new GUIText("Test", 1.0f, font, new Vector2f(0, 0), 1.0f, true);
         //SpriteSheet sheet = new SpriteSheet(new File("C:/GameEngine/projects/test-project/sprites/Skeleton Walk.png"), 22, 33, 0);
@@ -201,11 +201,11 @@ public class EngineCore {
         project_root = new File(project_root.toString().replace("%%project%%", name));
         if(!engine_root.exists()) {
             engine_root.mkdirs();
-            engine_root.mkdir();
+            //engine_root.mkdir();
         }
         if(!native_root.exists()) {
             native_root.mkdirs();
-            native_root.mkdir();
+            //native_root.mkdir();
         }
         linkNatives();
         try {
@@ -215,7 +215,7 @@ public class EngineCore {
         }
         if(!project_root.exists()) {
             project_root.mkdirs();
-            project_root.mkdir();
+            //project_root.mkdir();
             FileUtils.createProjectFiles();
         }
         if(ArgumentParser.args.containsKey("--configOverride")) {
@@ -275,43 +275,40 @@ public class EngineCore {
     }
 
     public static void handleFileUpdates() {
-        MasterRenderer.gameLogic.add(new Runnable() {
-            @Override
-            public void run() {
-                //System.out.println(getMouseCoords());
-                //currentScene.getObjects().get(0).setPosition(getMouseCoords());
-                //currentScene.getObjects().get(0).setPosition(new Vector2f(Mouse.getX()/(fullscreenMode.getWidth()/10), Mouse.getY()/(fullscreenMode.getHeight()/10)));
-                for(int i = 0; i < handleUpdate.size(); i++) {
-                    File updated = handleUpdate.get(i);
-                    if(updated != null) {
-                        if (updated.getName().equalsIgnoreCase("engine_config.cfg")) {
-                            try {
-                                EngineConfig cfg = FileUtils.loadConfig(updated);
-                                Display.setTitle(cfg.title);
-                                if (cfg.width == FULLSCREEN) {
-                                    Display.setDisplayMode(fullscreenMode);
-                                    Display.setFullscreen(true);
-                                } else {
-                                    Display.setDisplayMode(new DisplayMode(cfg.width, cfg.height));
-                                }
-                                Display.setVSyncEnabled(cfg.vsync);
-                                Display.setResizable(cfg.resizable);
-                                EngineCore.cfg = cfg;
-
-                                MasterRenderer.renderer.loadProjectionMatrix(Maths.createProjectionMatrix());
-
-                            } catch (LWJGLException e) {
-                                Log.logError("Error while reloading engine config!");
+        MasterRenderer.gameLogic.add(() -> {
+            //System.out.println(getMouseCoords());
+            //currentScene.getObjects().get(0).setPosition(getMouseCoords());
+            //currentScene.getObjects().get(0).setPosition(new Vector2f(Mouse.getX()/(fullscreenMode.getWidth()/10), Mouse.getY()/(fullscreenMode.getHeight()/10)));
+            for(int i = 0; i < handleUpdate.size(); i++) {
+                File updated = handleUpdate.get(i);
+                if(updated != null) {
+                    if (updated.getName().equalsIgnoreCase("engine_config.cfg")) {
+                        try {
+                            EngineConfig cfg = FileUtils.loadConfig(updated);
+                            Display.setTitle(cfg.title);
+                            if (cfg.width == FULLSCREEN) {
+                                Display.setDisplayMode(fullscreenMode);
+                                Display.setFullscreen(true);
+                            } else {
+                                Display.setDisplayMode(new DisplayMode(cfg.width, cfg.height));
                             }
-                        }
+                            Display.setVSyncEnabled(cfg.vsync);
+                            Display.setResizable(cfg.resizable);
+                            EngineCore.cfg = cfg;
 
-                        if(updated.getName().endsWith(".prefab")) {
-                            PrefabManager.reloadPrefab(updated);
-                        }
+                            MasterRenderer.renderer.loadProjectionMatrix(Maths.createProjectionMatrix());
 
-                        handleUpdate.remove(updated);
-                        Log.log("Reloaded '" + updated.getPath() + "'!");
+                        } catch (LWJGLException e) {
+                            Log.logError("Error while reloading engine config!");
+                        }
                     }
+
+                    if(updated.getName().endsWith(".prefab")) {
+                        PrefabManager.reloadPrefab(updated);
+                    }
+
+                    handleUpdate.remove(updated);
+                    Log.log("Reloaded '" + updated.getPath() + "'!");
                 }
             }
         });

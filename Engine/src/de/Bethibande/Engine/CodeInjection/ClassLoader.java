@@ -1,9 +1,6 @@
 package de.Bethibande.Engine.CodeInjection;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 
 public class ClassLoader extends java.lang.ClassLoader {
 
@@ -20,8 +17,6 @@ public class ClassLoader extends java.lang.ClassLoader {
 
             return defineClass(name, classData, 0, classData.length);
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

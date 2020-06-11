@@ -1,6 +1,5 @@
 package de.Bethibande.Engine.FileUtils;
 
-import de.Bethibande.Engine.EngineConfig;
 import de.Bethibande.Engine.EngineCore;
 import de.Bethibande.Engine.utils.Log;
 
@@ -35,15 +34,13 @@ public class FileUpdater extends Thread {
                             Log.log("Registered a file change: '" + child + "'!");
                         }
                     } catch (Exception x) {
-                        System.err.println(x);
+                        x.printStackTrace();
                         continue;
                     }
                     key.reset();
                     break;
                 }
             }
-        } catch (InterruptedException e) {
-            return;
         } catch(Exception e) {
             e.printStackTrace();
         }

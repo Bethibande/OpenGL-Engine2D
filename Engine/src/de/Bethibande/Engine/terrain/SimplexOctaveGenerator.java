@@ -1,6 +1,7 @@
 package de.Bethibande.Engine.terrain;
 
 import java.util.Random;
+@SuppressWarnings("unused")
 public class SimplexOctaveGenerator extends OctaveGenerator {
     private double wScale = 1;
 

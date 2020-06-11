@@ -2,7 +2,6 @@ package de.Bethibande.Engine.Boot;
 
 import de.Bethibande.Engine.EngineCore;
 import de.Bethibande.Engine.Error.EngineError;
-import de.Bethibande.Engine.FileUtils.FileUtils;
 import de.Bethibande.Engine.exporter.ProjectExporter;
 
 import java.io.File;
@@ -16,7 +15,7 @@ public class Bootstrap {
     // --releaseProject:PATH - will make a release folder with all the files needed an ready to be released
     // if PATH given/not equals "null" it will create the folder in the directory
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         ArgumentParser.parseArguments(args);
         if(args.length < 1) {
             System.err.println("[!!!] You have to specify a project name as a start argument! [!!!]");
@@ -39,7 +38,7 @@ public class Bootstrap {
                     File target = new File(ArgumentParser.args.get("--releaseProject").equalsIgnoreCase("null") ? EngineCore.engine_root + "/export/" + args[0] + "/": ArgumentParser.args.get("--releaseProject"));
                     if(!target.exists()) {
                         target.mkdirs();
-                        target.mkdir();
+                        //target.mkdir();
                     }
                     ProjectExporter.export(project, target, args[1].replaceAll("%%_%%", " "));
                     System.out.println("Project Exported!");

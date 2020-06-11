@@ -2,14 +2,15 @@ package de.Bethibande.Engine;
 
 import lombok.Getter;
 
+@SuppressWarnings("unused")
 public class Timer {
 
     @Getter
-    private float start;
+    private final float start;
     @Getter
-    private float end;
+    private final float end;
     @Getter
-    private int time;
+    private final int time;
     @Getter
     private float value;
     @Getter

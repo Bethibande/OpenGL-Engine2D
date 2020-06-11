@@ -13,22 +13,26 @@ public class PostProcessing {
     private static LinkedHashMap<String, LinkedList<PostProcessingRenderer>> pc = new LinkedHashMap<>();
     // these postprocessing effects will be applied to the whole rendered scene and not only one layer
     // !!! please note, the ui won't be affected by this !!!
-    private static LinkedList<PostProcessingRenderer> finalPP = new LinkedList<>();
+    private static final LinkedList<PostProcessingRenderer> finalPP = new LinkedList<>();
 
     // because of the layers in the "pc" hashmap, they need to be correctly initialized for the current scene or the engine will crash
     // due to the not existing layers in the postprocessing called by the postprocessing
     private static Scene2D loadedScene;
 
+    @SuppressWarnings("unused")
     public static void addPostProcessing(String layer, PostProcessingRenderer ppr) {
         pc.get(layer).add(ppr);
     }
+    @SuppressWarnings("unused")
     public static void removePostProcessing(String layer, PostProcessingRenderer ppr) {
         pc.get(layer).remove(ppr);
     }
 
+    @SuppressWarnings("unused")
     public static void addPostProcessing(PostProcessingRenderer ppr) {
         finalPP.add(ppr);
     }
+    @SuppressWarnings("unused")
     public static void removePostProcessing(PostProcessingRenderer ppr) {
         finalPP.remove(ppr) ;
     }

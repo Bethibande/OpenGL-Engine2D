@@ -2,10 +2,8 @@ package de.Bethibande.Engine.Rendering.shaders;
 
 import de.Bethibande.Engine.Camera;
 import de.Bethibande.Engine.EngineCore;
-import de.Bethibande.Engine.Lights.PointLight;
 import de.Bethibande.Engine.utils.Maths;
 import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 public class DefaultShader extends ShaderProgram {

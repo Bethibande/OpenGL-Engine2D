@@ -6,6 +6,7 @@ import de.Bethibande.Engine.Rendering.SpriteLoader;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class PrefabManager {
 
@@ -16,7 +17,7 @@ public class PrefabManager {
     }
 
     public static void loadPrefabs(File file) {
-        for(File f : file.listFiles()) {
+        for(File f : Objects.requireNonNull(file.listFiles())) {
             if(f.isDirectory()) {
                 loadPrefabs(f);
             } else {
@@ -30,7 +31,7 @@ public class PrefabManager {
 
     public static void savePrefabs() {
         for(Prefab f : prefabs.keySet()) {
-            FileUtils.saveJson(new File(prefabs.get(f).toString()), f);
+            FileUtils.saveJson(new File(prefabs.get(f)), f);
         }
     }
 
@@ -47,6 +48,7 @@ public class PrefabManager {
                 prefabs.remove(p);
                 Prefab p2 = (Prefab)FileUtils.loadJson(f);
                 prefabs.put(p2, f.getPath());
+                assert p2 != null;
                 if(p2.isResourceLoader()) {
                     SpriteLoader.reloadResourceTexture(p2.getName(), p2.getTexture());
                 } else SpriteLoader.reloadTexture(p2.getName(), p2.getTexture());

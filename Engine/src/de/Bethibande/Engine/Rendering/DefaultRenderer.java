@@ -10,9 +10,7 @@ import de.Bethibande.Engine.utils.Maths;
 import lombok.Getter;
 import lombok.Setter;
 import org.lwjgl.opengl.*;
-import org.lwjgl.util.Dimension;
 import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector2f;
 
 import java.util.List;
 
@@ -21,13 +19,15 @@ public class DefaultRenderer {
     // this renderer renders the different layers to an fbo
     // it also applies lightning and shading to the layers
 
-    private DefaultShader shader;
+    private final DefaultShader shader;
 
-    private RawModel quad;
+    private final RawModel quad;
+    //private static DisplayMode screenSize;
 
     @Getter
     @Setter
     private boolean wireframe = false;
+
 
     public DefaultRenderer() {
         this.shader = new DefaultShader();
@@ -49,7 +49,7 @@ public class DefaultRenderer {
                 3,1,2
         };
         quad = EngineCore.loader.loadToVAO(vertices, textureCoords, indices);
-        screenSize = Display.getDesktopDisplayMode();
+        //screenSize = Display.getDesktopDisplayMode();
     }
 
     public FBO render(List<GameObject2D> objs, FBO f) {
@@ -140,19 +140,15 @@ public class DefaultRenderer {
         GL11.glCullFace(GL11.GL_BACK);
         //GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
     }
-
-    private static DisplayMode screenSize;
-    public boolean isOnScreen(GameObject2D obj) {
+    /*public boolean isOnScreen(GameObject2D obj) {
         Vector2f pos = obj.getPosition();
         Vector2f cPos = EngineCore.cam.getPosition();
         if(pos.x-cPos.x >= 0 && pos.y-cPos.y >= 0) {
-            if(obj.getSize().x+pos.x-cPos.x <= screenSize.getWidth() && obj.getSize().y+pos.y-cPos.y <= screenSize.getHeight()) {
-                return true;
-            }
+            return obj.getSize().x + pos.x - cPos.x <= screenSize.getWidth() && obj.getSize().y + pos.y - cPos.y <= screenSize.getHeight();
         }
 
         return false;
-    }
+    }*/
 
     public void loadProjectionMatrix(Matrix4f matrix) {
         shader.start();

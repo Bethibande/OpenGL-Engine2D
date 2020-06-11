@@ -6,9 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class UIManager {
 
-    private static HashMap<Class<UIElement>, UIRenderer> elementRenderers = new HashMap();
+    private static final HashMap<Class<UIElement>, UIRenderer> elementRenderers = new HashMap();
 
     public static void registerRenderer(Class<UIElement> elementType, UIRenderer renderer) { elementRenderers.put(elementType, renderer); }
     public static void unregister(Class<UIElement> elementType) { elementRenderers.remove(elementType); }

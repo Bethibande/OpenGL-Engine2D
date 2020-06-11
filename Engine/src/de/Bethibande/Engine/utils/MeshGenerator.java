@@ -5,6 +5,7 @@ import de.Bethibande.Engine.Entities.RawModel;
 
 import java.util.LinkedList;
 
+@SuppressWarnings("unused")
 public class MeshGenerator {
 
     public static RawModel createMeshFromPoints(LinkedList<Float> points, int verticesPerRow) {

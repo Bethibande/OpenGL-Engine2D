@@ -4,7 +4,6 @@ import de.Bethibande.Engine.Entities.GameObject2D;
 import de.Bethibande.Engine.Entities.Texture;
 import de.Bethibande.Engine.Rendering.SpriteLoader;
 import de.Bethibande.Engine.Timer;
-import de.Bethibande.Engine.TimerCode;
 import de.Bethibande.Engine.TimerManager;
 import de.Bethibande.Engine.utils.Log;
 import lombok.Getter;
@@ -26,7 +25,7 @@ public class SpriteSheet {
         spriteSizeY -> the y-size of one sprite on the sprite sheet
         spriteDistance -> distance between the sprites on the sprite sheet
      */
-    private List<String> loadedSprites = new ArrayList<>();
+    private final List<String> loadedSprites = new ArrayList<>();
     private File sheet;
     @Getter
     @Setter
@@ -34,8 +33,8 @@ public class SpriteSheet {
     @Getter
     @Setter
     private boolean resetToStartingTexture = true;
-    private HashMap<GameObject2D, Timer> playing = new HashMap<>();
-    private HashMap<GameObject2D, Integer> rText = new HashMap<>();
+    private final HashMap<GameObject2D, Timer> playing = new HashMap<>();
+    private final HashMap<GameObject2D, Integer> rText = new HashMap<>();
     public SpriteSheet(File sheet, int spriteSizeX, int spriteSizeY, int spriteDistance) {
         try {
             this.sheet = sheet;
@@ -56,49 +55,39 @@ public class SpriteSheet {
         }
     }
 
+    @SuppressWarnings("unused")
     public void play(int framesPerSprite, GameObject2D obj) {
         if(playing.containsKey(obj)) return;
         if(!rText.containsKey(obj) && resetToStartingTexture) { rText.put(obj, obj.getModel().getId()); }
-        Timer t = new Timer(new TimerCode() {
-            @Override
-            public void run(float value) {
-                int i = (int) value;
-                obj.setModel(new Texture(SpriteLoader.textures.get(sheet.getName() + "$" + i)));
-            }
-        }, new TimerCode() {
-            @Override
-            public void run(float value) {
-                try {
-                    if (loopAnimation) {
-                        //TimerManager.timers.remove(this);
-                        //System.out.println("loop!");
-                        playing.remove(obj);
-                        play(framesPerSprite, obj);
-                    } else {
-                        if(resetToStartingTexture) obj.setModel(new Texture(rText.get(obj)));
-                        playing.remove(obj);
-                    }
-                    //rText.remove(obj);
-                    return;
-                } catch(StackOverflowError e) {
-                    if (loopAnimation) {
-                        //TimerManager.timers.remove(this);
-                        playing.remove(obj);
-                        play(framesPerSprite, obj);
-                    } else {
-                        playing.remove(obj);
-                        if(resetToStartingTexture) obj.setModel(new Texture(rText.get(obj)));
-                    }
-                    //rText.remove(obj);
+        Timer t = new Timer(value -> {
+            int i = (int) value;
+            obj.setModel(new Texture(SpriteLoader.textures.get(sheet.getName() + "$" + i)));
+        }, value -> {
+            try {
+                if (loopAnimation) {
+                    //TimerManager.timers.remove(this);
+                    //System.out.println("loop!");
+                    playing.remove(obj);
+                    play(framesPerSprite, obj);
+                } else {
+                    if(resetToStartingTexture) obj.setModel(new Texture(rText.get(obj)));
+                    playing.remove(obj);
                 }
+                //rText.remove(obj);
+            } catch(StackOverflowError e) {
+                if (loopAnimation) {
+                    //TimerManager.timers.remove(this);
+                    playing.remove(obj);
+                    play(framesPerSprite, obj);
+                } else {
+                    playing.remove(obj);
+                    if(resetToStartingTexture) obj.setModel(new Texture(rText.get(obj)));
+                }
+                //rText.remove(obj);
             }
         }, 0, loadedSprites.size() - 1, framesPerSprite * (loadedSprites.size()));
-        if(!playing.containsKey(obj)) {
-            playing.put(obj, t);
-        } else {
-            playing.remove(obj);
-            playing.put(obj, t);
-        }
+        playing.remove(obj);
+        playing.put(obj, t);
     }
 
     public void stop(GameObject2D obj) {
@@ -111,6 +100,7 @@ public class SpriteSheet {
         }
     }
 
+    @SuppressWarnings("unused")
     public boolean isPlaying(GameObject2D obj) { return playing.containsKey(obj); }
 
 }

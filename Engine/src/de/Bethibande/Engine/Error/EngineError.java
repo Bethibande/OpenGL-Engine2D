@@ -53,7 +53,7 @@ public class EngineError {
         });
         retry.setEnabled(false);
 
-        f.setDefaultCloseOperation(3);
+        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         close.setLocation(10, 475);
         retry.setLocation(205, 475);

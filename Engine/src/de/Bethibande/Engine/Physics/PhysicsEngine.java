@@ -70,12 +70,12 @@ Shape rotatedRect = at.createTransformedShape(myRect);
                 if (PositionUtils.distance(newPosition, b.getPosition()) < a.getCollider().x + a.getCollider().y + b.getCollider().x + b.getCollider().y) {
                     if (useRotations) {
                         AffineTransform transform = new AffineTransform();
-                        transform.rotate(Math.toRadians(b.getRotation()), r2.getX() + r2.width / 2, r2.getY() + r2.height / 2);
+                        transform.rotate(Math.toRadians(b.getRotation()), r2.getX() + r2.width / 2f, r2.getY() + r2.height / 2f);
                         Shape rotatedRect = transform.createTransformedShape(r2);
                         if (rotatedRect.intersects(r) && b != a) {
                             CollisionEvent e = new CollisionEvent(a, b);
                             EventManager.runEvent(e);
-                            if(e.isCancelled() && collided != true) {
+                            if(e.isCancelled() && !collided) {
                                 collided = false;
                             } else {
                                 collided = true;
@@ -94,7 +94,7 @@ Shape rotatedRect = at.createTransformedShape(myRect);
                     } else if (r.intersects(r2) && b != a) {
                         CollisionEvent e = new CollisionEvent(a, b);
                         EventManager.runEvent(e);
-                        if(e.isCancelled() && collided != true) {
+                        if(e.isCancelled() && !collided) {
                             collided = false;
                         } else {
                             collided = true;
@@ -138,12 +138,12 @@ Shape rotatedRect = at.createTransformedShape(myRect);
                 if (PositionUtils.distance(newPosition, b.getPosition()) < a.getCollider().x + a.getCollider().y + b.getCollider().x + b.getCollider().y) {
                     if (useRotations) {
                         AffineTransform transform = new AffineTransform();
-                        transform.rotate(Math.toRadians(b.getRotation()), r2.getX() + r2.width / 2, r2.getY() + r2.height / 2);
+                        transform.rotate(Math.toRadians(b.getRotation()), r2.getX() + r2.width / 2f, r2.getY() + r2.height / 2f);
                         Shape rotatedRect = transform.createTransformedShape(r2);
                         if (rotatedRect.intersects(r) && b != a) {
                             CollisionEvent e = new CollisionEvent(a, b);
                             EventManager.runEvent(e);
-                            if(e.isCancelled() && collided != true) {
+                            if(e.isCancelled() && !collided) {
                                 collided = false;
                             } else {
                                 collided = true;
@@ -152,8 +152,8 @@ Shape rotatedRect = at.createTransformedShape(myRect);
                     } else if (r.intersects(r2) && b != a) {
                         CollisionEvent e = new CollisionEvent(a, b);
                         EventManager.runEvent(e);
-                        if(e.isCancelled() && collided != true) {
-                            collided = false;
+                        if(e.isCancelled() && !collided) {
+                        collided = false;
                         } else {
                             collided = true;
                         }
@@ -173,10 +173,10 @@ Shape rotatedRect = at.createTransformedShape(myRect);
        && r.y < y + height && r.y + r.height > y;
     }
      */
-    private static boolean intersects(Vector4f a, Vector4f b) {
+    /*private static boolean intersects(Vector4f a, Vector4f b) {
         return b.z > 0 && b.w > 0 && a.z > 0 && a.w > 0
        && b.x < a.x + a.z && b.x + b.z > a.x
        && b.y < a.y + a.w && b.y + b.w > a.y;
-    }
+    }*/
 
 }
